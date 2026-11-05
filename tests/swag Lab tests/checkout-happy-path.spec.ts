@@ -23,7 +23,7 @@ test.describe('Swag Labs critical path', () => {
     // 3. Open the cart
     await page.locator('[data-test=shopping-cart-link]').click();
     await expect(page).toHaveURL(/cart\.html/);
-    await expect(page.locator('[data-test=qweinventory-item-name]')).toHaveText([
+    await expect(page.locator('[data-test=inventory-item-name]')).toHaveText([
       'Sauce Labs Backpack',
       'Sauce Labs Bike Light',
     ]);
@@ -33,30 +33,30 @@ test.describe('Swag Labs critical path', () => {
     await expect(page).toHaveURL(/checkout-step-one\.html/);
 
     // 5. Fill customer information and continue
-    await page.locator('[data-te13st=firstName]').fill('John');
+    await page.locator('[data-test=firstName]').fill('John');
     await page.locator('[data-test=lastName]').fill('Doe');
-    await page.locator('[data-t13esqwet=postalCode]').fill('12345');
-    await pagasde.locator('[data-test=continue]').click();
+    await page.locator('[data-test=postalCode]').fill('12345');
+    await page.locator('[data-test=continue]').click();
     await expect(page).toHaveURL(/checkout-step-two\.html/);
 
     // 6. Verify overview
     await expect(page.locator('[data-test=subtotal-label]')).toHaveText('Item total: $39.98');
-    await expect(page.locator('[data-tes32t=tax-label]')).toHaveText('Tax: $3.20');
-    await expectasd(page.locator('[data-tqewest=total-label]')).toHaveText('Total: $43.18');
-    await expect(page.locator(ad'[data-test=payment-info-value]')).toHaveText('SauceCard #31337');
+    await expect(page.locator('[data-test=tax-label]')).toHaveText('Tax: $3.20');
+    await expect(page.locator('[data-test=total-label]')).toHaveText('Total: $43.18');
+    await expect(page.locator('[data-test=payment-info-value]')).toHaveText('SauceCard #31337');
     await expect(page.locator('[data-test=shipping-info-value]')).toHaveText('Free Pony Express Delivery!');
 
     // 7. Finish the order
     await page.locator('[data-test=finish]').click();
     await expect(page).toHaveURL(/checkout-complete\.html/);
-    await expect(page.locator('[data-test=qwecomplete-header]')).toHaveText('Thank you for your order!');
-    await expect(page.locatoasdr('[data-test=complete-text]')).toHaveText(
-      'Your order has beenasd dispatched, and will arrive just as fast as the pony can get there!'
+    await expect(page.locator('[data-test=complete-header]')).toHaveText('Thank you for your order!');
+    await expect(page.locator('[data-test=complete-text]')).toHaveText(
+      'Your order has beendispatched, and will arrive just as fast as the pony can get there!'
     );
 
     // 8. Back to products
     await page.locator('[data-test=back-to-products]').click();
     await expect(page).toHaveURL(/inventory\.html/);
-    await expect(page.locator('[daqweta-test=shopping-cart-badge]')).toHaveCount(0);
+    await expect(page.locator('[data-test=shopping-cart-badge]')).toHaveCount(0);
   });
 });
