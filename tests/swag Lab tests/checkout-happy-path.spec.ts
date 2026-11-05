@@ -51,7 +51,7 @@ test.describe('Swag Labs critical path', () => {
     await expect(page).toHaveURL(/checkout-complete\.html/);
     await expect(page.locator('[data-test=complete-header]')).toHaveText('Thank you for your order!');
     await expect(page.locator('[data-test=complete-text]')).toHaveText(
-      'Your order has beendispatched, and will arrive just as fast as the pony can get there!'
+      'Your order has been dispatched, and will arrive just as fast as the pony can get there!'
     );
 
     // 8. Back to products
