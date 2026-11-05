@@ -205,3 +205,61 @@ How this maps to our repo:
 - `claude.yml` passes no `claude_args`, so it uses the default model and has no
   turn limit. `--max-turns` would be the first thing to add to cap run length
   and cost.
+
+---
+
+## Things to remember when using Claude in GitHub
+
+Claude in a workflow runs on its own, with no one watching, and every step
+costs tokens. Without limits, a confused run can keep going for hours. Sources:
+the `claude-code-action` docs (configuration, security, migration guide) and
+the Claude Code CLI reference at https://code.claude.com/docs/en/cli-reference.
+
+### Limits to set on every Claude workflow
+
+| Limit | How | What it does |
+|---|---|---|
+| Job timeout | `timeout-minutes: 15` on the job | GitHub kills the job after 15 minutes, whatever Claude is doing. The hard wall. Without it the GitHub default is 6 hours. |
+| Turn limit | `claude_args: --max-turns 30` | Claude stops after N steps. Docs: for controlling cost and keeping runs predictable. |
+| Dollar cap | `claude_args: --max-budget-usd 2.00` | Stops the run once estimated spend reaches the amount, including subagents. |
+| Concurrency | a `concurrency:` group with `cancel-in-progress: true` | Stops several quick comments or pushes starting several paid runs at once. Standard GitHub Actions feature. |
+| Narrow tools | `claude_args: --allowedTools "..."` | Claude gets only the tools it needs, so it has fewer ways to wander. |
+| Who can trigger | keep `allowed_bots` empty (the default) | No bots can trigger the action. |
+
+Details to know:
+
+- **The dollar cap can overshoot.** It is checked after each response, so one
+  response can push spend past the cap. It is also a client-side estimate, not
+  your bill. Leave headroom.
+- **The dollar cap is documented as print-mode only.** The action passes any CLI
+  argument through `claude_args`, but we have not confirmed the cap takes effect
+  inside the action. Test it before relying on it.
+- **Never use `allowed_bots: '*'` on a public repo.** The docs warn that
+  external GitHub Apps could then invoke the action with a prompt they control.
+- **Fewer triggers, lower cost.** `claude-code-review.yml` runs on every push to
+  a PR (`synchronize`). Removing that trigger or adding a `paths:` filter means
+  fewer paid runs.
+- **Account limits are a backstop.** The `CLAUDE_CODE_OAUTH_TOKEN` is tied to
+  your subscription, so its usage limits apply. Not looked up in detail yet.
+
+### Where this repo stands (2026-11-05)
+
+| Workflow | Turn limit | Job timeout | Dollar cap | Concurrency |
+|---|---|---|---|---|
+| `claude.yml` (`@claude`) | `--max-turns 30` (written, not on `main` yet) | none | none | none |
+| `claude-code-review.yml` (every PR) | none | none | none | none |
+
+Not added yet: this list is what to implement next. `playwright.yml` has a
+60-minute timeout, far more than the suite needs.
+
+### Other things to remember
+
+- **Public repo means public triggers.** Anyone can open an issue or comment.
+  Check who is allowed to start a run before relying on `@claude` being safe.
+- **A run that posts nothing can still cost money.** The review on PR #3 made no
+  comment but still ran and cost about $0.056.
+- **Check the Actions tab for run times.** A run that takes far longer than
+  usual is the early warning that a limit is missing.
+- **Claude only does what the workflow allows.** Default tools are file
+  operations, comments and basic GitHub actions. Shell commands must be allowed
+  one by one with `--allowedTools`.
