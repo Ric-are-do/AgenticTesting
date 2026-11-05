@@ -52,7 +52,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: |
             --max-turns 30
-            --allowedTools "Bash(bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh:*),Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*)"
+            --allowedTools "Bash(bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh:*),Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*),mcp__github_inline_comment__create_inline_comment"
 
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
