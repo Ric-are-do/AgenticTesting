@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Find a failed Playwright CI run and download its artifacts and failed log.
 #
-# Usage: fetch-failure.sh [RUN_ID]
-#   No RUN_ID: use the latest failed run of $CI_WORKFLOW on $CI_BRANCH, looking
-#   back past newer runs that passed. An explicit RUN_ID may be from any branch.
+# Usage: fetch-failure.sh [--branch NAME] [RUN_ID]
+#   No RUN_ID: use the latest failed run of $CI_WORKFLOW on the branch (default
+#   main), looking back past newer runs that passed. An explicit RUN_ID may be
+#   from any branch and wins over --branch.
 #
-# Env: CI_WORKFLOW (default "Playwright Tests"), CI_BRANCH (default "main").
+# Env: CI_WORKFLOW (default "Playwright Tests"), CI_BRANCH (default "main";
+# --branch overrides it).
 # Needs `gh` logged in locally, or GH_TOKEN set on GitHub.
 #
 # Stdout: RUN_ID=, HEAD_SHA=, HEAD_BRANCH=, RUN_DIR=
@@ -14,7 +16,16 @@ set -euo pipefail
 
 WORKFLOW="${CI_WORKFLOW:-Playwright Tests}"
 BRANCH="${CI_BRANCH:-main}"
-RUN_ID="${1:-}"
+RUN_ID=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --branch)
+      [ $# -ge 2 ] || { echo "--branch needs a branch name." >&2; exit 2; }
+      BRANCH="$2"; shift 2 ;;
+    *) RUN_ID="$1"; shift ;;
+  esac
+done
 
 if [ -z "$RUN_ID" ]; then
   # `gh run list` errors when the workflow name does not exist; treat that as "none found".

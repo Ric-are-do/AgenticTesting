@@ -53,4 +53,19 @@ run 41894900615
 [ "$CODE" -eq 0 ] && [ -d ".ci-failure/41894900615/playwright-report" ]
 check downloads_report_and_results $?
 
+# branch_flag_looks_on_that_branch: --branch picks the latest failure on another branch
+run --branch add-claude-github-actions-1793818471215
+[ "$CODE" -eq 0 ] && [ "$(field HEAD_BRANCH)" = "add-claude-github-actions-1793818471215" ]
+check branch_flag_looks_on_that_branch $?
+
+# branch_flag_with_no_failures_exits_3: a branch with no failed runs
+run --branch no-such-branch
+[ "$CODE" -eq 3 ]
+check branch_flag_with_no_failures_exits_3 $?
+
+# run_id_wins_over_branch_flag: an explicit run ID is used even if --branch names another branch
+run --branch no-such-branch 41894900615
+[ "$CODE" -eq 0 ] && [ "$(field RUN_ID)" = "41894900615" ]
+check run_id_wins_over_branch_flag $?
+
 [ "$FAILS" -eq 0 ] && echo "ALL PASSED" || { echo "$FAILS FAILED"; exit 1; }

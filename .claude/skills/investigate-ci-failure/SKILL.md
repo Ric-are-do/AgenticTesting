@@ -13,8 +13,9 @@ Input (optional): a run ID, or a directory of already-downloaded artifacts.
 ## 1. Get the evidence
 
 - If the user gave an artifacts directory, use it and skip the fetch. Read the run ID from the folder name if there is one, otherwise use `local`.
-- Otherwise run `bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh [RUN_ID]`.
-  - Exit 3: say that `main` has no failed runs and stop. Write no report.
+- Otherwise run `bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh [--branch NAME] [RUN_ID]`.
+  - By default it looks at `main`. Only if the user names a branch, pass `--branch <that branch>`. If the user gives a run ID, pass just the run ID.
+  - Exit 3: say that the branch (`main` unless the user named another) has no failed runs and stop. Write no report.
   - Exit 4: there are no artifacts. Work from `<RUN_DIR>/failed.log` only.
   - Exit 0: artifacts are in `RUN_DIR` (`playwright-report/`, `test-results/`) with `failed.log` beside them.
 
