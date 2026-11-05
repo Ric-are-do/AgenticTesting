@@ -30,11 +30,29 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Tools the investigate-ci-failure skill needs: Node, Chromium and Playwright CLI.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install chromium
+      - name: Install Playwright CLI
+        run: npm install -g @playwright/cli@latest
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
+        env:
+          # `gh` (used by the investigate-ci-failure skill) needs a token and the repo.
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Bash(bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh:*),Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*)"
 
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
@@ -48,3 +66,12 @@ jobs:
           # or https://code.claude.com/docs/en/cli-reference for available options
           # claude_args: '--allowed-tools Bash(gh pr *)'
 
+
+      # The investigate-ci-failure skill writes its report to reports/.
+      - name: Upload failure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-report
+          path: reports/
+          if-no-files-found: ignore

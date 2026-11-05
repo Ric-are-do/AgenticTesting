@@ -23,7 +23,7 @@ export default defineConfig({
   /* On CI, use half of the runner's CPU cores (minimum 1). */
   workers: process.env.CI ? Math.max(1, Math.floor(os.cpus().length / 2)) : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['html'], ['json', { outputFile: 'test-results/results.json' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Headed locally, headless on CI (CI runners have no display). */
@@ -31,8 +31,9 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Keep a trace and a screenshot for every failed attempt, so CI failures can be investigated. */
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */

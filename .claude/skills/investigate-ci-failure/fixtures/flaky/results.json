@@ -1,0 +1,48 @@
+{
+  "config": { "projects": [{ "name": "chromium" }] },
+  "suites": [
+    {
+      "title": "fixture.spec.ts",
+      "file": "fixture.spec.ts",
+      "specs": [
+        {
+          "title": "fixture flaky login",
+          "ok": true,
+          "file": "fixture.spec.ts",
+          "line": 3,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "flaky",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": { "message": "Error: locator.click: Timeout 5000ms exceeded.\n  waiting for locator('[data-test=login-button]')" }
+                },
+                { "retry": 1, "status": "passed" }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 20,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                { "retry": 0, "status": "failed", "error": { "message": "Error: expect(page).toHaveURL(/inventory/)\nReceived: https://example.test/login" } },
+                { "retry": 1, "status": "failed", "error": { "message": "Error: expect(page).toHaveURL(/inventory/)\nReceived: https://example.test/login" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stats": { "expected": 0, "unexpected": 1, "flaky": 1, "skipped": 0 }
+}
