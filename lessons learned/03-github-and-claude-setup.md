@@ -1,58 +1,207 @@
 # GitHub and Claude Setup
 
-Notes on connecting this project to GitHub and using Claude Code with it.
-Add to this file as we learn more.
+How we connected this project to GitHub Actions and the Claude Code GitHub
+integration. Each step says what we did and what it does.
 
-## 1. GitHub CLI (`gh`)
+**Video walkthrough of this setup:** https://www.youtube.com/watch?v=7pKN_pjPW04
 
-Check that it is installed and logged in:
+**Official documentation:** https://code.claude.com/docs/en/github-actions
+(Claude Code GitHub Actions: quick and manual setup, secrets, organization rollout.)
+
+Repo: https://github.com/Ric-are-do/AgenticTesting (public, default branch `main`)
+
+---
+
+## Step 1. Check the GitHub CLI (`gh`)
 
 ```powershell
 gh --version
 gh auth status
 ```
 
+**What it does:** confirms the GitHub CLI is installed and that you are logged
+in. `gh` lets us look at runs, PRs and comments from the terminal.
+
 State on this machine (2026-11-04):
 
-- `gh` 2.78.0 is installed.
-- Logged in to github.com as `Ric-are-do`, with the token stored in the keyring.
+- `gh` 2.78.0 installed, logged in as `Ric-are-do`.
 - Token scopes: `gist`, `read:org`, `repo`, `workflow`.
-  - `repo` lets us create repos and push.
-  - `workflow` lets us push changes to `.github/workflows/` and manage Actions runs.
+  - `repo`: create repos and push.
+  - `workflow`: change files in `.github/workflows/` and manage Actions runs.
 
-## 2. Project state before GitHub
+## Step 2. Put the project on GitHub
 
-- The folder is **not a git repository** and has no remote.
-- `.github/workflows/playwright.yml` is the default file from `npm init playwright@latest`.
-- `.gitignore` already exists.
+1. Create the repository on GitHub (`Ric-are-do/AgenticTesting`).
+2. Push the project with a first commit.
 
-## 3. Install the Claude GitHub app (`/install-github-app`)
+**What it does:** GitHub Actions only runs for code that is on GitHub, and the
+Claude app needs a repository to be given access to.
 
-First step of the integration. Inside a Claude Code session, type:
+**Gotcha:** running `/install-github-app` before the repo existed did nothing.
+The first attempt ended with "Installation cancelled by user". The repository
+has to be published first.
+
+The folder on disk can be out of step with GitHub (we found the remote already
+had commits and the local folder was missing them). Link and update it with:
+
+```powershell
+git remote add origin https://github.com/Ric-are-do/AgenticTesting.git
+git fetch origin
+git pull --ff-only
+```
+
+`--ff-only` refuses to merge anything unexpected, and uncommitted local edits
+are kept.
+
+## Step 3. Install the Claude GitHub app (`/install-github-app`)
+
+In a Claude Code session, type:
 
 ```
 /install-github-app
 ```
 
-This is a Claude Code slash command, so you type it yourself in the prompt. It
-walks you through giving Claude access to the GitHub repository you choose and
-setting up GitHub Actions for it.
+You type this yourself; Claude cannot run slash commands for you.
+
+**What it does:** walks you through giving the Claude GitHub app access to the
+repo you choose, stores a Claude token as a repository secret
+(`CLAUDE_CODE_OAUTH_TOKEN`), and opens a pull request that adds two workflow
+files. The second run finished with "GitHub Actions setup complete!".
+
+**What it created:** PR #1 "Add Claude Code GitHub Workflow", which we merged.
+It added:
+
+| File | Runs when | What it does |
+|---|---|---|
+| `.github/workflows/claude.yml` | Someone writes `@claude` in an issue, issue comment, PR comment or PR review | Claude reads the request and does the work (answers, edits code, opens a PR) |
+| `.github/workflows/claude-code-review.yml` | A PR is opened, updated, reopened or marked ready | Claude reviews the PR and posts inline comments |
+
+Both use `anthropics/claude-code-action@v1`.
+
+## Step 4. Tune the Playwright workflow
+
+The workflow from `npm init playwright@latest` is
+`.github/workflows/playwright.yml`. It runs the tests on every push and PR to
+`main`. We changed it for this project:
+
+| Change | Where | Why |
+|---|---|---|
+| `npx playwright install chromium` instead of `install --with-deps` | `playwright.yml` | Install one browser, not all three plus system packages. Faster. |
+| Removed the `firefox` and `webkit` projects | `playwright.config.ts` | We only test Chrome, so there is nothing to run for them. |
+| `workers: process.env.CI ? Math.max(1, Math.floor(os.cpus().length / 2)) : undefined` | `playwright.config.ts` | The tests are independent, so they can run side by side. On CI we use half of the runner's cores, worked out on the runner itself. |
+| `headless: !!process.env.CI` | `playwright.config.ts` | `headless: false` needs a screen. CI runners have none, so it stays headed locally and headless on CI. |
 
 Notes:
 
-- The repository needs to exist on GitHub first, so do the repo creation step
-  below before running this.
-- Record here which repo you picked, what the command created (for example any
-  new files under `.github/workflows/`), and anything unexpected.
+- This installs **Chromium**, not Google Chrome. Chrome itself would need
+  `channel: 'chrome'` and a system install on the runner.
+- A standard GitHub runner for public repos has 4 cores, so expect 2 workers.
+  (Not yet checked in a run log.)
 
-## 4. Steps (fill in as we do them)
+## Step 5. Watch runs from the terminal
 
-- [ ] `git init` and first commit
-- [ ] Create the GitHub repo with `gh repo create` and push
-- [ ] Review and adjust `.github/workflows/playwright.yml`
-- [ ] Watch a run with `gh run list` / `gh run watch`
-- [ ] Decide how Claude Code fits in (for example, healing failed CI tests)
+```powershell
+gh run list -R Ric-are-do/AgenticTesting --limit 10
+gh run view <run-id> -R Ric-are-do/AgenticTesting --log
+```
+
+**What it does:** shows each workflow run with its result, branch and trigger,
+and the full log for one run.
+
+## Step 6. Try the whole loop
+
+What happened in this repo on 2026-11-04, read from the run list:
+
+1. A test was pushed to `main` that fails on purpose ("failed on purpose
+   throwing error"). **Playwright Tests** failed, as it should.
+2. Issue #2 "Failing test" was opened mentioning `@claude`. That fired
+   **Claude Code** (`claude.yml`).
+3. Claude created branch `claude/issue-2-20261104-1917` and opened PR #3 "fix:
+   use correct password in locked-out login test".
+4. On PR #3, **Playwright Tests** passed and **Claude Code Review** ran.
+5. PR #3 was merged.
+
+## Where the Claude review shows up
+
+Claude Code Review posts **inline comments on the PR** (Files changed tab).
+Nothing is written to the repo. The run log is in the Actions tab and is kept
+for GitHub's retention period (90 days by default).
+
+---
 
 ## Lessons learned
 
-- Nothing yet. Add each lesson here with the reason it matters.
+- **Publish the repo before `/install-github-app`.** Without a repo on GitHub
+  there is nothing to install into.
+- **Seeing a change in the editor is not a commit.** Edits show as uncommitted
+  changes until you commit them yourself.
+- **Check that local and GitHub match before editing.** The remote had commits
+  the local folder did not (the merged PR #1), so we fetched and fast-forwarded
+  first.
+- **A successful review run can post nothing.** On PR #3 the Claude review
+  finished without error (8 seconds, 3 turns, no permission denials) and logged
+  "No buffered inline comments". The workflow only posts inline comments, so a
+  clean review looks the same as no review. To always see a result, the review
+  prompt would need to ask for a summary comment.
+- **`headless: false` breaks CI.** Make it depend on `process.env.CI`.
+- **Mention `@claude` to hand Claude work.** An issue with `@claude` in its
+  title or body is enough to start `claude.yml`.
+
+### Interactive and automation modes
+
+Source: https://code.claude.com/docs/en/github-actions#interactive-and-automation-modes
+
+This text is an extract:
+
+> The Claude Code GitHub Action detects how to run from your workflow
+> configuration:
+>
+> **Interactive mode:** when the workflow provides no prompt input, Claude
+> waits for the trigger phrase, `@claude` by default, in an issue or pull
+> request comment, in a pull request review, or in the body or title of a newly
+> opened issue, then responds to that request. Progress and results appear as a
+> comment on the triggering issue or PR.
+>
+> **Automation mode:** when the workflow provides a prompt input, Claude runs
+> without waiting for a mention, subject only to the checks on who can trigger
+> runs. By default, results appear in the workflow run log rather than a
+> comment. Claude can post to the issue or pull request when the prompt directs
+> it to and it has a tool that can post, as in the code-review example.
+
+How this maps to our repo:
+
+- `claude.yml` has no `prompt`, so it is interactive.
+- `claude-code-review.yml` has a `prompt`, so it is automation. Its results go
+  to the run log unless the prompt tells Claude to post. That explains why the
+  review on PR #3 left no comment.
+
+### Pass CLI arguments (`claude_args`)
+
+Source: https://code.claude.com/docs/en/github-actions
+
+This text is an extract:
+
+> The `claude_args` parameter accepts any Claude Code CLI argument:
+>
+> ```yaml
+> claude_args: "--max-turns 5 --model claude-sonnet-5 --mcp-config /path/to/config.json"
+> ```
+>
+> Common arguments:
+>
+> - `--max-turns`: limit the number of conversation turns
+> - `--model`: model to use, for example `claude-sonnet-5`. Without this
+>   argument, the Claude Code GitHub Action uses the Claude Code default model
+> - `--mcp-config`: path to MCP configuration
+> - `--allowedTools`: comma-separated list of allowed tools. The
+>   `--allowed-tools` alias also works
+> - `--debug`: enable debug output
+
+How this maps to our repo:
+
+- `claude-code-review.yml` already uses `claude_args` to pass `--allowedTools
+  "mcp__github_inline_comment__create_inline_comment"`, which limits the review
+  to posting inline comments.
+- `claude.yml` passes no `claude_args`, so it uses the default model and has no
+  turn limit. `--max-turns` would be the first thing to add to cap run length
+  and cost.
