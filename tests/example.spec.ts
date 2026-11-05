@@ -35,8 +35,8 @@ test('exception page describes its supported scenarios', async ({ page }) => {
   for (const scenario of [
     'NoSuchElementException',
     'ElementNotInteractableException',
-    'InvalidElem123entStateException',
-    'StaleElemen132tReferenceException',
+    'InvalidElementStateException',
+    'StaleElementReferenceException',
     'TimeoutException',
   ]) {
     await expect(page.getByRole('heading', { name: new RegExp(scenario) })).toBeVisible();
