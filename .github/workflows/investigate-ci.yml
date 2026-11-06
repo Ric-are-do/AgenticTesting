@@ -42,6 +42,10 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
+      # Pinned to the versions verified on PR #9 (run 42265467750). Bump on purpose,
+      # then check one investigator run.
+      CLAUDE_CODE_VERSION: 2.1.319
+      PLAYWRIGHT_CLI_VERSION: 0.1.23
     steps:
       - uses: actions/checkout@v4
         with:
@@ -112,17 +116,24 @@ jobs:
       # files with `git show <head sha>:<path>` (full history is fetched above).
 
       # --- Tools the skill needs (skipped when the evidence could not be fetched)
+      # Setup failures never fail the job: Claude is skipped and the fallback
+      # report names the failed install instead.
       - uses: actions/setup-node@v4
+        id: node
         if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        continue-on-error: true
         with:
           node-version: lts/*
       - name: Install tools
-        if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        id: tools
+        if: ${{ steps.node.outcome == 'success' }}
         continue-on-error: true
         run: |
           npm ci
           npx playwright install chromium
-          npm install -g @playwright/cli@latest @anthropic-ai/claude-code
+          npm install -g "@playwright/cli@${PLAYWRIGHT_CLI_VERSION}" "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          claude --version
+          playwright-cli --version
 
       # The Claude Code CLI, not claude-code-action: the action rejects `push`
       # events, and this workflow runs for failed pushes to main too.
@@ -130,7 +141,7 @@ jobs:
       # and the upload below always get to run.
       - name: Investigate with Claude
         id: claude
-        if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        if: ${{ steps.tools.outcome == 'success' }}
         continue-on-error: true
         timeout-minutes: 10
         env:
@@ -153,12 +164,18 @@ jobs:
         env:
           RUN_ID: ${{ steps.ids.outputs.run_id || 'none' }}
           FETCH_EXIT: ${{ steps.fetch.outputs.exit_code }}
+          NODE_OUTCOME: ${{ steps.node.outcome }}
+          TOOLS_OUTCOME: ${{ steps.tools.outcome }}
           CLAUDE_OUTCOME: ${{ steps.claude.outcome }}
         run: |
           if [ "$FETCH_EXIT" = "3" ]; then
             reason="No failed run found"
           elif [ -n "$FETCH_EXIT" ] && [ "$FETCH_EXIT" != "0" ] && [ "$FETCH_EXIT" != "4" ]; then
             reason="the evidence could not be downloaded (fetch-failure.sh exit $FETCH_EXIT)"
+          elif [ "$NODE_OUTCOME" = "failure" ]; then
+            reason="tool install failed: setup-node did not succeed, so Claude was not started. See the 'setup-node' step log"
+          elif [ "$TOOLS_OUTCOME" = "failure" ]; then
+            reason="tool install failed (npm ci, Chromium, Playwright CLI ${PLAYWRIGHT_CLI_VERSION} or Claude Code ${CLAUDE_CODE_VERSION}), so Claude was not started. See the 'Install tools' step log"
           elif [ "$CLAUDE_OUTCOME" != "success" ]; then
             reason="the Claude step ended with outcome '${CLAUDE_OUTCOME:-not run}' (turn limit, timeout or error)"
           else
