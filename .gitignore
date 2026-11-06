@@ -10,3 +10,7 @@ node_modules/
 # CI failure investigator
 /.ci-failure/
 /reports/
+
+# Playwright CLI / MCP session logs and snapshots
+/.playwright-cli/
+/.playwright-mcp/
