@@ -1,0 +1,276 @@
+{
+  "config": {
+    "projects": [
+      {
+        "name": "chromium"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "fixture.spec.ts",
+      "file": "fixture.spec.ts",
+      "specs": [
+        {
+          "title": "fixture hard failure 1",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 10,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(page).toHaveURL(/inventory/)\nExpected pattern: /inventory/\nReceived string: \"https://www.saucedemo.com/\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-1-chromium/error-context.md"
+                    }
+                  ]
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(page).toHaveURL(/inventory/)\nExpected pattern: /inventory/\nReceived string: \"https://www.saucedemo.com/\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-1-chromium/error-context.md"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure 2",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 20,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\nLocator: locator(\"[data-test=\\\"title\\\"]\")\nExpected: \"Products\"\nReceived: \"Your Cart\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-2-chromium/error-context.md"
+                    }
+                  ]
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\nLocator: locator(\"[data-test=\\\"title\\\"]\")\nExpected: \"Products\"\nReceived: \"Your Cart\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-2-chromium/error-context.md"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure 3",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 30,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: locator.click: Timeout 5000ms exceeded.\n  waiting for locator(\"[data-test=\\\"checkout-button\\\"]\")"
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-3-chromium/error-context.md"
+                    }
+                  ]
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: locator.click: Timeout 5000ms exceeded.\n  waiting for locator(\"[data-test=\\\"checkout-button\\\"]\")"
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-3-chromium/error-context.md"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure 4",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 40,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\nLocator: locator(\"[data-test=\\\"error\\\"]\")\nExpected: \"Error: First Name is required\"\nReceived: \"Error: Last Name is required\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-4-chromium/error-context.md"
+                    }
+                  ]
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\nLocator: locator(\"[data-test=\\\"error\\\"]\")\nExpected: \"Error: First Name is required\"\nReceived: \"Error: Last Name is required\""
+                  },
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "test-results/fixture-hard-failure-4-chromium/error-context.md"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure 5",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 50,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveCount(expected)\nLocator: locator(\".cart_item\")\nExpected: 2\nReceived: 1"
+                  },
+                  "attachments": []
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: expect(locator).toHaveCount(expected)\nLocator: locator(\".cart_item\")\nExpected: 2\nReceived: 1"
+                  },
+                  "attachments": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture hard failure 6",
+          "ok": false,
+          "file": "fixture.spec.ts",
+          "line": 60,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://www.saucedemo.com/checkout-complete.html"
+                  },
+                  "attachments": []
+                },
+                {
+                  "retry": 1,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://www.saucedemo.com/checkout-complete.html"
+                  },
+                  "attachments": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "fixture flaky checkout",
+          "ok": true,
+          "file": "fixture.spec.ts",
+          "line": 80,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "flaky",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "error": {
+                    "message": "Error: locator.click: Timeout 5000ms exceeded.\n  waiting for locator(\"[data-test=\\\"finish\\\"]\")"
+                  }
+                },
+                {
+                  "retry": 1,
+                  "status": "passed"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 0,
+    "unexpected": 6,
+    "flaky": 1,
+    "skipped": 0
+  }
+}
