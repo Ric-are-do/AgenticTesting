@@ -32,3 +32,20 @@ jobs:
         name: test-results
         path: test-results/
         retention-days: 30
+
+  # When the tests fail, Claude investigates and uploads a ci-failure-report artifact
+  # to this run. Flaky-only runs pass, so they never get here. Forks get no secrets: skip.
+  investigate:
+    needs: test
+    if: ${{ failure() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/investigate-ci.yml
+    secrets: inherit
+    with:
+      run_id: ${{ github.run_id }}
+      same_run: true
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      head_branch: ${{ github.head_ref || github.ref_name }}
+      base_ref: ${{ github.event_name == 'pull_request' && 'origin/main' || '' }}

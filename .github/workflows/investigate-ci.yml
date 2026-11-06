@@ -1,0 +1,175 @@
+name: Investigate CI failure
+
+# Reusable investigator. Called by:
+#   - playwright.yml, when the test job fails (same_run: true, artifacts are in this run)
+#   - claude.yml, on an "@claude investigate [run-id]" comment (same_run: false)
+# Always ends green, and always uploads a ci-failure-report artifact.
+on:
+  workflow_call:
+    inputs:
+      run_id:
+        description: Playwright run to investigate. Empty on the comment path = latest failed run.
+        type: string
+        default: ''
+      same_run:
+        description: true when the artifacts are in the calling run.
+        type: boolean
+        default: false
+      head_sha:
+        description: Commit to report and check out. Empty = take it from the fetch script.
+        type: string
+        default: ''
+      head_branch:
+        description: Branch to report. Empty = take it from the fetch script.
+        type: string
+        default: ''
+      base_ref:
+        description: Base for git diff (origin/main on PRs). Empty = last passing run.
+        type: string
+        default: ''
+      branch:
+        description: Branch the fetch script searches when no run_id is given.
+        type: string
+        default: ''
+
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Evidence: artifacts from this same run -------------------------
+      - name: Download test-results
+        if: ${{ inputs.same_run }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: .ci-failure/${{ inputs.run_id }}/test-results
+      - name: Download playwright-report
+        if: ${{ inputs.same_run }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: .ci-failure/${{ inputs.run_id }}/playwright-report
+
+      # --- Evidence: artifacts from another run (comment path) ------------
+      - name: Fetch failed run
+        id: fetch
+        if: ${{ !inputs.same_run }}
+        env:
+          RUN_ID: ${{ inputs.run_id }}
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          args=()
+          if [ -n "$BRANCH" ]; then args+=(--branch "$BRANCH"); fi
+          if [ -n "$RUN_ID" ]; then args+=("$RUN_ID"); fi
+          set +e
+          bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh "${args[@]}" > fetch.out
+          code=$?
+          set -e
+          cat fetch.out
+          sed -n -e 's/^RUN_ID=/run_id=/p' -e 's/^HEAD_SHA=/head_sha=/p' \
+                 -e 's/^HEAD_BRANCH=/head_branch=/p' fetch.out >> "$GITHUB_OUTPUT"
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve run, commit and branch
+        id: ids
+        env:
+          SAME_RUN: ${{ inputs.same_run }}
+          IN_RUN_ID: ${{ inputs.run_id }}
+          IN_SHA: ${{ inputs.head_sha }}
+          IN_BRANCH: ${{ inputs.head_branch }}
+          IN_BASE: ${{ inputs.base_ref }}
+          F_RUN_ID: ${{ steps.fetch.outputs.run_id }}
+          F_SHA: ${{ steps.fetch.outputs.head_sha }}
+          F_BRANCH: ${{ steps.fetch.outputs.head_branch }}
+        run: |
+          if [ "$SAME_RUN" = "true" ]; then
+            run_id="$IN_RUN_ID"
+          else
+            run_id="${F_RUN_ID:-$IN_RUN_ID}"
+          fi
+          {
+            echo "run_id=${run_id:-none}"
+            echo "head_sha=${IN_SHA:-$F_SHA}"
+            echo "head_branch=${IN_BRANCH:-$F_BRANCH}"
+            echo "base_ref=$IN_BASE"
+          } >> "$GITHUB_OUTPUT"
+
+      # The working tree stays on this workflow's commit, so the skill and the
+      # fallback script are always present. The skill reads the tested commit's
+      # files with `git show <head sha>:<path>` (full history is fetched above).
+
+      # --- Tools the skill needs (skipped when the evidence could not be fetched)
+      - uses: actions/setup-node@v4
+        if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        with:
+          node-version: lts/*
+      - name: Install tools
+        if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        continue-on-error: true
+        run: |
+          npm ci
+          npx playwright install chromium
+          npm install -g @playwright/cli@latest @anthropic-ai/claude-code
+
+      # The Claude Code CLI, not claude-code-action: the action rejects `push`
+      # events, and this workflow runs for failed pushes to main too.
+      # The step timeout is below the job's 15 minutes, so the fallback report
+      # and the upload below always get to run.
+      - name: Investigate with Claude
+        id: claude
+        if: ${{ steps.fetch.outputs.exit_code == '' || steps.fetch.outputs.exit_code == '0' || steps.fetch.outputs.exit_code == '4' }}
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          RUN_ID: ${{ steps.ids.outputs.run_id }}
+          HEAD_SHA: ${{ steps.ids.outputs.head_sha || 'unknown' }}
+          HEAD_BRANCH: ${{ steps.ids.outputs.head_branch || 'unknown' }}
+          BASE_REF: ${{ steps.ids.outputs.base_ref }}
+        run: |
+          prompt="/investigate-ci-failure .ci-failure/$RUN_ID, limit 5, head sha $HEAD_SHA, branch $HEAD_BRANCH"
+          if [ -n "$BASE_REF" ]; then prompt="$prompt, compare against $BASE_REF"; fi
+          echo "Prompt: $prompt"
+          claude -p "$prompt" \
+            --max-turns 50 \
+            --allowedTools "Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Read,Write,Edit,Glob,Grep"
+
+      # --- A report always exists ------------------------------------------
+      - name: Write fallback report if none
+        if: ${{ always() }}
+        env:
+          RUN_ID: ${{ steps.ids.outputs.run_id || 'none' }}
+          FETCH_EXIT: ${{ steps.fetch.outputs.exit_code }}
+          CLAUDE_OUTCOME: ${{ steps.claude.outcome }}
+        run: |
+          if [ "$FETCH_EXIT" = "3" ]; then
+            reason="No failed run found"
+          elif [ -n "$FETCH_EXIT" ] && [ "$FETCH_EXIT" != "0" ] && [ "$FETCH_EXIT" != "4" ]; then
+            reason="the evidence could not be downloaded (fetch-failure.sh exit $FETCH_EXIT)"
+          elif [ "$CLAUDE_OUTCOME" != "success" ]; then
+            reason="the Claude step ended with outcome '${CLAUDE_OUTCOME:-not run}' (turn limit, timeout or error)"
+          else
+            reason="Claude finished but wrote no report"
+          fi
+          bash .claude/skills/investigate-ci-failure/scripts/write-fallback-report.sh "$RUN_ID" "$reason"
+
+      - name: Upload report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-report
+          path: reports/
+          if-no-files-found: warn
