@@ -15,11 +15,19 @@ Open this first when we start working again.
      `investigate-ci.yml`.
 5. [ ] **Implement a self-learning mechanism.** Build it up from reviews, like
    a lessons-learned log, basically like the memory file the agent uses.
-6. [ ] **Go with the super agent model** (see "Notes to myself" below). One
+   *(Started 2026-11-10: qa-tester has `memory: project` in
+   `.claude/agent-memory/qa-tester/`, seeded with what we learned. Still to
+   do: test it with two calls (save, then recall), and decide whether review
+   findings should feed into it.)*
+6. [x] **Go with the super agent model** (done 2026-11-10: `.claude/agents/qa-tester.md`
+   + 3 new skills; spec in `docs/superpowers/specs/2026-11-10-qa-tester-super-agent-design.md`,
+   test logs in `docs/superpowers/skill-tests/`. Real `@agent-qa-tester` call
+   checked by the user after a restart: works.) One
    generic agent with multiple skills as a toolbox, e.g. use this skill when
    doing tests, use that skill when doing code. Claude knows which skill to
    use.
-7. [ ] **Cover frontmatter and add it to all our skills.** The frontmatter
+7. [x] **Cover frontmatter and add it to all our skills.** (done 2026-11-10: all 5
+   skills use "Use when..." trigger-only descriptions; routing tested 35/35.) The frontmatter
    lesson is in `lessons learned/09-frontmatter.md`. Add `name` and
    `description` frontmatter to every skill in `.claude/skills/`.
 

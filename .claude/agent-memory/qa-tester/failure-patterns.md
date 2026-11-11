@@ -1,0 +1,3 @@
+# Failure patterns
+
+(none yet)
