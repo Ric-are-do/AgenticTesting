@@ -1,6 +1,6 @@
 ---
 name: investigate-ci-failure
-description: Investigate why the Playwright tests failed in GitHub Actions. Finds the latest failed run on main (or a run ID you give), downloads its artifacts, checks the failure with Playwright CLI, and writes a markdown report. Use when asked to investigate, explain or debug a CI failure. Read-only: it never changes code.
+description: Use when Playwright tests failed in GitHub Actions or CI, such as "why did CI fail", "the Playwright job is red on main", a failed run ID or run link, or CI artifacts that were already downloaded. Use when an explanation of a CI failure is wanted without changing code. Not for tests that fail when run locally.
 allowed-tools: Bash(bash .claude/skills/investigate-ci-failure/scripts/fetch-failure.sh:*) Bash(gh run:*) Bash(playwright-cli:*) Bash(git log:*) Bash(git diff:*) Bash(git show:*) Read Write Edit Glob Grep
 ---
 

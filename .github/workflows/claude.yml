@@ -56,6 +56,15 @@ jobs:
           # or https://code.claude.com/docs/en/cli-reference for available options
           # claude_args: '--allowed-tools Bash(gh pr *)'
 
+      # Token usage of every call (input, output, cache read, cache write), in the
+      # log and the job summary.
+      - name: Log Claude token usage
+        if: ${{ always() && steps.claude.outputs.execution_file != '' }}
+        continue-on-error: true
+        env:
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        run: node .github/scripts/log-claude-usage.mjs "$EXECUTION_FILE" "@claude"
+
   # "@claude investigate [run-id]": read the run ID (optional) and, on a PR, its branch.
   # Only the owner, members and collaborators can start it (it costs Claude usage).
   parse:

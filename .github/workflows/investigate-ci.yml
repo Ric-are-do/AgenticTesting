@@ -154,9 +154,23 @@ jobs:
           prompt="/investigate-ci-failure .ci-failure/$RUN_ID, limit 5, head sha $HEAD_SHA, branch $HEAD_BRANCH"
           if [ -n "$BASE_REF" ]; then prompt="$prompt, compare against $BASE_REF"; fi
           echo "Prompt: $prompt"
+          # stream-json writes every message as it happens, so the usage of each
+          # API call is in claude-stream.jsonl even if the run is cut off.
           claude -p "$prompt" \
+            --output-format stream-json --verbose \
             --max-turns 50 \
-            --allowedTools "Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Read,Write,Edit,Glob,Grep"
+            --allowedTools "Bash(gh run:*),Bash(playwright-cli:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Read,Write,Edit,Glob,Grep" \
+            > claude-stream.jsonl
+
+      # Token usage of every call (input, output, cache read, cache write), in the
+      # log and the job summary. Runs even when the Claude step failed or timed out.
+      - name: Log Claude token usage
+        if: ${{ always() && steps.tools.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          # Print Claude's final answer, as the old text output did.
+          node -e 'for (const l of require("fs").readFileSync("claude-stream.jsonl","utf8").split("\n")) { try { const m = JSON.parse(l); if (m.type === "result" && m.result) console.log(m.result); } catch {} }' || true
+          node .github/scripts/log-claude-usage.mjs claude-stream.jsonl "CI investigator"
 
       # --- A report always exists ------------------------------------------
       - name: Write fallback report if none
