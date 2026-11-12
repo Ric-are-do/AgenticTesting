@@ -39,3 +39,25 @@ needed to write the plan".
 
 All 5 reps: 1 ci ✅, 2 cli ✅, 3 cli ✅, 4 none ✅, 5 none ✅, 6 none ✅ (30/30).
 Typical reason for 4: "fails locally, which investigate-ci-failure excludes, and playwright-cli alone isn't for fixing test files".
+
+## 2026-11-12: three new skills (plan Task 7)
+
+Same method: fresh `sonnet` subagents get only the 8 skill names and
+descriptions, no tools, and pick one skill (or none) per request. 5 reps.
+
+| # | Request | Right |
+|---|---------|-------|
+| 1 | Why did the Playwright job fail on main last night? | investigate-ci-failure |
+| 2 | Open saucedemo and check the login button is visible | playwright-cli |
+| 3 | Take a screenshot of the cart page | playwright-cli |
+| 4 | The checkout-happy-path test fails when I run it locally | healing-playwright-tests |
+| 5 | Write a test plan for the Swag Labs cart | planning-playwright-tests |
+| 6 | Load-test the API | none |
+| 7 | Set up a test framework for this new project | building-playwright-framework |
+| 8 | Map how the tests in this repo are organised | mapping-existing-framework |
+| 9 | We've never looked at this site before, investigate it | mapping-site-journeys |
+| 10 | Write the test for scenario 2.1 | generating-playwright-tests |
+| 11 | The cart test fails locally | healing-playwright-tests |
+| 12 | Add our second app to the test framework | building-playwright-framework |
+
+All 5 reps answered all 12 correctly (60/60). No description changes needed.
