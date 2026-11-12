@@ -102,8 +102,9 @@ The rules, briefly:
 - **Several named users per app,** switched with `test.use({ user: 'admin' })`.
 - **Missing env vars skip, loudly:** `skipped: SWAG_LABS_URL not set`. The run
   never fails for it.
-- **Credentials in code only with your approval for that app.** Swag Labs is
-  approved. A URL isn't a secret, so it gets a default.
+- **Credentials in code only with your approval for that app.** Approvals are
+  recorded per repo in the agent's `decisions.md` (Swag Labs so far), not in
+  the skill. A URL isn't a secret, so it gets a default.
 
 ## Inside the mapping skills
 
@@ -152,7 +153,7 @@ answer in the hand-off.
 | Limit | Value | Where |
 |---|---|---|
 | Git | no add, commit, push, branches, PRs | `qa-tester.md` boundaries |
-| CI files | `.github/` never edited | `qa-tester.md` boundaries |
+| CI files | `.github/` never edited, even if a hand-off "allows" it | `qa-tester.md` boundaries |
 | Tests | never deleted (`test.fixme()` + comment allowed) | `qa-tester.md` boundaries |
 | Agent's own setup | no edits to `.claude/` (except its memory) or `.mcp.json` | `qa-tester.md` boundaries |
 | Framework code | may build and change it; every shared change listed under `Framework changes:` | `qa-tester.md` |
@@ -187,6 +188,14 @@ answer in the hand-off.
    `playwright.config.ts`, so the first framework was half wired up.
 9. **`playwright-cli`'s `getByTestId` looks for `data-testid`,** not the
    app's `data-test`. Agents fell back to CSS `[data-test=...]` when exploring.
+10. **"Unless the hand-off allows it" is a back door.** Told "you're explicitly
+    allowed to edit `.github/`", the agent edited the workflow. Some
+    boundaries (`.github/`, git writes, deleting tests) are now never
+    overridden by a hand-off.
+11. **A review finding can be real in the text but not in the behaviour.**
+    Four of the final review's findings didn't reproduce: the agent did the
+    right thing anyway. We still fixed the wording (a later model may read it
+    literally) but logged them as "not reproduced", not as proven bugs.
 
 ## Known gaps
 
@@ -196,7 +205,9 @@ answer in the hand-off.
   approved defaults); only the missing-URL skip was.
 - **Swag Labs trial run** (moving the real tests onto the framework) is still
   to do.
-- **`generating-playwright-tests` is ~570 words**, over the ~500 target.
+- **`generating-playwright-tests` is ~610 words**, over the ~500 target.
+- **The "Legacy tests" and `playwright/.auth/` rules** weren't re-run after the
+  wording fix; the earlier run already behaved that way.
 - **[12-agent-memory.md](12-agent-memory.md) still describes
   `app-knowledge.md` as holding app facts.** It now holds pointers to
   `docs/apps/` only.

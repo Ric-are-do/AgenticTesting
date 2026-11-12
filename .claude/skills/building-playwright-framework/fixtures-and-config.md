@@ -51,7 +51,8 @@ An API-only test that never asks for `page` never triggers a login.
 ## Secrets
 
 - URLs and credentials come from env vars, loaded from `.env` with `dotenv`.
-  `.env` goes in `.gitignore`; add a `.env.example` with the variable names
+  `.env` and `playwright/.auth/` (saved login sessions hold live cookies) go
+  in `.gitignore`; add a `.env.example` with the variable names
   and no values. A missing `.env` must not break the run (CI has none).
 - **A URL is not a secret.** Give `defaultBaseUrl` the app's known URL in
   `app.config.ts` (no approval needed), so a fresh checkout and CI run the
@@ -60,7 +61,7 @@ An API-only test that never asks for `page` never triggers a login.
   variable named (`ABACUS_PASSWORD not set`). Never fail the run for it; never
   drop the project silently.
 - **Defaults in `app.config.ts` only when the user approved it for that app.**
-  Never on your own judgement, even for "public" demo credentials. Approved so
-  far: Swag Labs.
+  Never on your own judgement, even for "public" demo credentials. Approvals
+  are per repo and live in the agent's memory (`decisions.md`), not here.
 - Never write a secret into docs, plans, maps, reports or memory. Name the
   variable instead.

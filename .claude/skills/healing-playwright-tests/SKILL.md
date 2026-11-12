@@ -20,8 +20,10 @@ with a clean re-run of everything that uses what you changed.
 ## Process
 
 0. **Read the framework map** (`framework-map.md` in the agent's memory): it
-   says where locators, fixtures and helpers live. No map → go back to the
-   agent's map check.
+   says where locators, fixtures and helpers live. No map and the user
+   declined mapping → fix things where the sibling tests keep them. No map
+   otherwise → stop and ask whether to map the tests first. Tests in the
+   map's "Legacy tests" folder follow the legacy rules.
 1. **Run** `npx playwright test "<path>"` with the project's normal settings.
    List every failing test. Read each full error and its
    `test-results/**/error-context.md`.
@@ -35,11 +37,13 @@ with a clean re-run of everything that uses what you changed.
    | The broken thing is in... | Do |
    |---|---|
    | the failing `.spec.ts` itself | Fix it there |
-   | a page object, component, fixture, helper or config | **Fix it there** (a locator lives in its page object). Then find every spec that uses it (`Grep`) |
+   | a page object, component, fixture, helper or config | **Fix it there** (a locator lives in its page object) |
    | the app (a real bug) | Don't "fix" the test to pass. Report the bug |
 
-5. **One fix at a time**, then re-run that test, and after a shared fix,
-   every spec that uses the changed file.
+5. **One fix at a time**, then re-run that test. After a shared fix, re-run
+   **the whole app project** (`npx playwright test --project=<app>`): specs
+   reach page objects through fixtures and the login, so a `Grep` for the
+   file name misses most of them.
 6. **Can't fix it, and you're confident the test is right?** Add
    `test.fixme()` with a comment before the failing step saying what happens
    instead. Never delete a test.

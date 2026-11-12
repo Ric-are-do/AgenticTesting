@@ -20,7 +20,10 @@ before you write it**, then run the file and read the result honestly.
 ## Process
 
 0. **Read the framework map** (`framework-map.md` in the agent's memory) and
-   follow its decision and rules. No map → go back to the agent's map check.
+   follow its decision and rules. No map and the user declined mapping for
+   this task → write it like the sibling specs and carry on with every step
+   below. No map otherwise → stop and ask whether to map the tests first.
+   A spec in the map's "Legacy tests" folder follows the legacy rules.
    - `standard`: import `test`/`expect` from `@apps/<app>/fixtures`; use
      page-object fixtures only, never `page.locator` / `page.getBy*` or
      `new XPage(page)` in a spec. A missing locator or method goes into the

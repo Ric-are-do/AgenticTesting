@@ -20,8 +20,9 @@ open the app, stop and say so; don't write a plan from general knowledge.
 ## Process
 
 1. **Read the framework map** (`framework-map.md` in the agent's memory). It
-   says where plans, seeds and tests go. No map → stop and go back to the
-   agent's map check.
+   says where plans, seeds and tests go. No map and the user declined
+   mapping → put them next to the existing plans and tests. No map otherwise
+   → stop and ask whether to map the tests first.
 2. **Read what exists.** Search the frontmatter in `docs/apps/<app>/` first
    (e.g. `Grep` for `^description:`) and open only the files that match. No
    `journey-map.md` → run mapping-site-journeys first, **as its own complete

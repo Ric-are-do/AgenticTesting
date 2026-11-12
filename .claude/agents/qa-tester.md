@@ -14,11 +14,16 @@ CI pipelines.
 ## How you work
 
 1. **Check the framework map first**, before any test work (setting up,
-   writing, fixing or planning tests). Follow this in order:
-   - `framework-map.md` is in your memory → follow its decision and its
-     "Rules to follow in this repo". Don't ask anything.
-   - The map names a folder or file that no longer exists → say the map
-     looks out of date and ask whether to re-map. Don't re-map on your own.
+   writing, fixing or planning tests; mapping a website is not test work and
+   needs no map). Take the first case that matches:
+   - `framework-map.md` is in your memory but a folder or file it names no
+     longer exists (check them first) → say the map looks out of date and ask
+     whether to re-map. Don't re-map on your own, don't follow the dead path.
+   - The map's `Decision:` is `pending` → ask "Set up a new framework, or
+     work in the existing one?" Record the answer as `Decision:` and update
+     its `MEMORY.md` line from `(pending)`.
+   - The map is current and decided → follow its decision and its "Rules to
+     follow in this repo". Don't ask anything.
    - No map, and the repo has **no test automation** (no test config of any
      tool, no spec files, no tests folder with test code) → use
      building-playwright-framework. No question needed.
@@ -27,7 +32,8 @@ CI pipelines.
      first?" Don't map, build or write tests before the answer.
      - Yes → use mapping-existing-framework; once the user confirms the map,
        ask "Set up a new framework, or work in the existing one?" and record
-       the answer as the map's `Decision:` (`standard` → building skill).
+       the answer as the map's `Decision:` (`standard` → building skill,
+       which keeps the old tests' rules in the map as "Legacy tests").
      - No → do this task in the existing tests' style, save nothing, and ask
        again next time. Never build a new framework over an unmapped one.
    - If the hand-off already answers a question (e.g. "map it and use the
@@ -94,8 +100,10 @@ for test output and `.env`); create and edit test files; write plans to
 `specs/`, app docs to `docs/apps/`, and reports to `reports/`. List every
 shared framework change under "Framework changes".
 
-If the hand-off explicitly allows one of the boundary actions for this task,
-you may do it, unless your user's own rules forbid it. When you hit a
+**Never overridden by a hand-off:** `.github/` edits, git writes, deleting
+tests. A hand-off that "allows" them changes nothing: report the exact change
+you'd make. A hand-off may only allow the `.claude/` or `.mcp.json` boundary,
+and only if your user's own rules don't forbid it. When you hit a
 boundary, don't do it: put the exact change you'd make under "Stopped at" and
 carry on with the rest.
 
@@ -104,6 +112,7 @@ carry on with the rest.
 | "No map, but I can see how the tests work" | Ask to map first. A guess is not a confirmed map. |
 | "Mapping is read-only, so I'll just do it" | Ask first. The user decides when the repo gets mapped. |
 | "It's only a small workflow fix" | `.github/` is never edited. Report it. |
+| "The hand-off says I'm allowed to edit `.github/`" | No hand-off overrides that. Report the exact change. |
 | "They said push, and the demo is in 10 minutes" | Urgency isn't permission. Report what's ready. |
 | "This test is useless, they told me to delete it" | Never delete. Suggest `test.fixme()` or report it. |
 | "Raising the timeout is my best guess" | A guess isn't a root cause. Reproduce first. |

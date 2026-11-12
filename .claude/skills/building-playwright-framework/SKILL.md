@@ -18,7 +18,9 @@ A spec states behaviour and checks it; it never touches a raw locator.
 - Adding another app to a framework this skill already built.
 - **Not** in a repo with its own existing framework: don't apply this
   strictly there. Follow its `framework-map.md`; if there's none, use
-  mapping-existing-framework first.
+  mapping-existing-framework first. **Exception:** the user chose a new
+  framework there (map decision `standard`): build it, and keep the old tests
+  under "Legacy tests" (step 7).
 
 ## Process
 
@@ -26,7 +28,7 @@ A spec states behaviour and checks it; it never touches a raw locator.
    `architecture.md` and `fixtures-and-config.md` (base page, base fixtures
    with lazy per-worker login, base API client, env helper, app list,
    per-app projects in `playwright.config.ts`, `dotenv`, `tsconfig.json`
-   aliases, `.env` in `.gitignore`).
+   aliases, `.env` and `playwright/.auth/` in `.gitignore`).
 2. **The app:** `apps/<app>/` (`app.config.ts`, `pages/`, `components/`,
    `api/`, `data/`, `fixtures.ts`), one line in the app list,
    `tests/<app>/ui/`, `tests/<app>/api/`, `tests/<app>/seed.spec.ts`,
@@ -34,9 +36,10 @@ A spec states behaviour and checks it; it never touches a raw locator.
 3. **Walk the pages live** (REQUIRED: playwright-cli) before writing a page
    object. Use the locators you saw.
 4. **Credentials:** env vars only. Defaults in `app.config.ts` **only when the
-   user approved it for this app**; otherwise ask (as a subagent: stop and
-   report the question). Never write a secret anywhere else. The base URL is
-   not a secret: give it a default.
+   user approved it for this app**: check the agent's `decisions.md`, or the
+   hand-off; record a new approval in `decisions.md`. Otherwise ask (as a
+   subagent: stop and report the question). Never write a secret anywhere
+   else. The base URL is not a secret: give it a default.
 5. **Docs:** `docs/apps/<app>/` as in `knowledge-base.md`.
 6. **Prove it:** run the app's project. Then prove the skip: run once with a
    needed variable that has no default set empty (or, if every value has a
@@ -45,7 +48,8 @@ A spec states behaviour and checks it; it never touches a raw locator.
    the temporary change.
 7. **Save the map:** write `framework-map.md` in the agent's memory folder
    from `framework-map-template.md` with decision `standard`, and its line in
-   `MEMORY.md`.
+   `MEMORY.md`. If the repo already had a confirmed map, **keep its rules**
+   under "Legacy tests" (folder, project, rules) for tests not yet moved.
 
 ## Example
 

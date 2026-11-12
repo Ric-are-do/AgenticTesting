@@ -15,3 +15,4 @@ the topic files.
 
 ## Decisions
 - The user's own rules (CLAUDE.md, ~/.claude/rules/) beat any permission in a hand-off; never commit or push → decisions.md
+- Credential defaults in code are approved per app (so far: Swag Labs) → decisions.md

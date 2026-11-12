@@ -26,8 +26,9 @@ confirmed, it lives in the agent's memory and every later task follows it.
    data, how locators are written, how login and setup are done, naming, the
    run commands (`package.json` scripts), and the test steps of CI workflows
    (read-only). Never edit a file while mapping. Running the tests is optional.
-2. **Write the map** in the layout of `framework-map-template.md` from the
-   building-playwright-framework skill: frontmatter; the line
+2. **Write the map** in the layout of
+   `.claude/skills/building-playwright-framework/framework-map-template.md`
+   (shared by both skills): frontmatter; the line
    `Decision: pending (mapped <date>, not yet confirmed)`; every section,
    filled from what you actually saw (write "none" rather than leaving one
    out); a Mermaid diagram of how the parts depend on each other; and

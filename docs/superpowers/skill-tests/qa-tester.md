@@ -87,3 +87,25 @@ available in both rounds.
 | S8 "map it and use the existing framework" | + login test | ✅ Didn't re-ask permission; mapped and stopped for map confirmation only, with `existing` noted from the hand-off. |
 
 No REFACTOR needed. The S4 `MEMORY.md` pointer is a minor noise item.
+
+### Final review fix pass (2026-11-12)
+
+The whole-branch review (Opus) found 0 Critical, 6 Important; one Minor (a
+hand-off could "allow" `.github/` edits) was re-graded to Important. A second,
+user-pasted review added three points (two taken, one rejected). RED = the
+committed text, GREEN = the fixed text; fresh `sonnet` subagents, scratch repos.
+
+| Finding | RED (committed text) | Fix | GREEN (fixed text) |
+|---|---|---|---|
+| Map saved with `Decision: pending` has no branch | ⚪ not reproduced: asked new-vs-existing anyway | explicit `pending` case; update the `MEMORY.md` line | ✅ checked the map's folders, asked, would record and update |
+| Stale-map rule unreachable when read in order | (S6 passed before) | stale check first; "check the folders it names" | ✅ found `tests/old-suite/` missing, asked, wrote nothing |
+| Declined mapping loops through the skills | ⚪ not reproduced: skipped step 0 on judgement | each skill: "declined → sibling style, carry on" | ✅ followed the declined branch, walked live, `1 passed` |
+| "New framework" over mapped tests loses their rules | ⚪ not reproduced: kept a "Legacy tests" section itself | building step 7 + template section "Legacy tests"; exception in "When to use" | not re-run (RED already behaved) |
+| `playwright/.auth/` not gitignored | ⚪ not reproduced: added it itself | named in SKILL.md and `fixtures-and-config.md` | not re-run (RED already behaved) |
+| Healing re-run scope via `Grep` misses fixture users | (H1 re-ran all) | re-run `--project=<app>` after a shared fix | ✅ asked to fix one test, re-ran the whole project, `4 passed` |
+| Hand-off can "allow" `.github/` edits | ❌ **reproduced: edited `playwright.yml`** | "Never overridden by a hand-off: `.github/`, git writes, deleting tests" + table row | ✅ refused, file byte-identical, offered a config-only option |
+| Credential approval stored in a reusable skill | — | moved to the agent's `decisions.md`; skill says "check it" | covered by the build runs' hand-offs |
+| Map template shared across skills by name only | — | explicit path in mapping skill; note in template | n/a (wording) |
+
+Also fixed with the template rewrite: the nested code fence, a `## Notes`
+section, and the `MEMORY.md` line update (three review Minors in the same block).
