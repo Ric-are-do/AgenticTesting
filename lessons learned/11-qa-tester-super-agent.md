@@ -227,6 +227,45 @@ Every RED run found something we'd never have guessed:
 | Healing | **Edited a shared helper** | Fixed only the test file and proposed the helper change |
 | Tester boundaries | 2/2 runs **edited `playwright.config.ts` on a guess** | 8/8 runs held every boundary |
 
+### 5. More from the framework skills (2026-11-12)
+
+Building three more skills
+([14-test-framework-skills.md](14-test-framework-skills.md)) added these:
+
+- **Check yourself, never trust the report.** Agents said "tests pass" or
+  "saved nothing", so we checked: grep the specs for raw locators, hash the
+  test files before and after, compare the workflow file with a saved copy,
+  re-run the tests.
+- **A RED run can pass.** The generating RED run had no failure. Log it as
+  "no failure seen" and only change what still needs changing (here, an
+  example that contradicted the new framework). Don't invent a failure to
+  justify an edit.
+- **Every rule has a loophole the agent will find.** "Never the value" →
+  copied a "public demo" password. "Read-only" → called the Checkout button a
+  write. Close each loophole with the exact case, in the agent's words.
+- **Skills calling skills change behaviour.** Site mapping covered the whole
+  site on its own, but only one area when planning called it. Test a skill
+  both on its own and from the skill that calls it.
+- **Write the rule at the right level.** Planning's partial map looked like
+  a planning bug; the fix belonged in the mapping skill.
+- **When things change, old boundaries silently block new work.** The old
+  agent text said "no `playwright.config.ts`", so the new build skill ran
+  half-way. Re-test the agent whenever a skill needs something it used to
+  forbid.
+- **One canonical template, referenced by name.** The framework map layout
+  lives in one file in the build skill; the mapping skill points to it, so
+  both write the same shape.
+- **System failures aren't skill failures.** A run stopped by rate limits or
+  an API safeguard says nothing about the skill. Log it as "not observed"
+  rather than pass or fail, and say what's left unproven.
+- **Run independent scenarios in parallel, in separate folders.** Eight agent
+  situations ran at once safely because each had its own scratch repo (and
+  its own `test-results/`).
+
+The healing row above changed too: healing now **fixes** a shared page object
+and re-runs every spec that uses it, because the agent is allowed to own the
+framework.
+
 ## Things worth knowing (the surprises)
 
 - **Your global rules reach called agents.** `~/.claude/rules/git-commits.md`
