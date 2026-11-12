@@ -2,8 +2,8 @@
 
 How we built one QA tester agent that picks the right skill for each job, and
 what we learned about writing skills that actually work. This follows on from
-[09-frontmatter.md](09-frontmatter.md) and
-[10-claude-skills-best-practices.md](10-claude-skills-best-practices.md).
+[09-skill-frontmatter.md](09-skill-frontmatter.md) and
+[10-skill-claude-skills-best-practices.md](10-skill-claude-skills-best-practices.md).
 
 Sources:
 
@@ -103,7 +103,7 @@ How to read it:
   steps yourself, it loads the planner first and then writes the test from
   that plan. The plan file is the hand-off between them. (The framework
   skills added more links, such as generating following the framework map;
-  see [14-test-framework-skills.md](14-test-framework-skills.md).)
+  see [14-skill-test-framework-skills.md](14-skill-test-framework-skills.md).)
 - The **dotted arrows** show that every Playwright skill drives the browser
   through `playwright-cli`. Nothing uses the `playwright-test` MCP server.
 - **Every path ends in the same report.** Anything the tester wasn't allowed
@@ -236,7 +236,7 @@ Every RED run found something we'd never have guessed:
 ### 5. More from the framework skills (2026-11-12)
 
 Building three more skills
-([14-test-framework-skills.md](14-test-framework-skills.md)) added these:
+([14-skill-test-framework-skills.md](14-skill-test-framework-skills.md)) added these:
 
 - **Check yourself, never trust the report.** Agents said "tests pass" or
   "saved nothing", so we checked: grep the specs for raw locators, hash the

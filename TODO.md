@@ -28,7 +28,7 @@ Open this first when we start working again.
    use.
 7. [x] **Cover frontmatter and add it to all our skills.** (done 2026-11-10: all 5
    skills use "Use when..." trigger-only descriptions; routing tested 35/35.) The frontmatter
-   lesson is in `lessons learned/09-frontmatter.md`. Add `name` and
+   lesson is in `lessons learned/09-skill-frontmatter.md`. Add `name` and
    `description` frontmatter to every skill in `.claude/skills/`.
 
 ## Carried over from last session (2026-11-06)

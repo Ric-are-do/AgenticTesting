@@ -232,4 +232,4 @@ the repo. Full logs: `docs/superpowers/skill-tests/`.
 | Routing | | 60/60 across 12 requests and 8 skills |
 
 See also [08-ci-investigator.md](08-ci-investigator.md) and
-[09-frontmatter.md](09-frontmatter.md).
+[09-skill-frontmatter.md](09-skill-frontmatter.md).

@@ -1,7 +1,7 @@
 # Claude Skills: Best Practices
 
 How to write skills that Claude can find and use well. This follows on from
-[09-frontmatter.md](09-frontmatter.md), which covers the frontmatter itself.
+[09-skill-frontmatter.md](09-skill-frontmatter.md), which covers the frontmatter itself.
 
 Source: [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 (Claude docs). Checked against the live page on 2026-11-12.
@@ -59,7 +59,7 @@ What works for a powerful model may need more detail for a small one.
 ### Frontmatter
 
 Two required fields, `name` and `description`. The rules are in
-[09-frontmatter.md](09-frontmatter.md).
+[09-skill-frontmatter.md](09-skill-frontmatter.md).
 
 ### Naming
 

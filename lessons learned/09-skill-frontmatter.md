@@ -105,7 +105,7 @@ Our skills in `.claude/skills/` (for example `investigate-ci-failure`) start
 with YAML frontmatter. The Claude docs say the `SKILL.md` frontmatter requires
 two fields ([source](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)).
 For the full skill guidance, see
-[10-claude-skills-best-practices.md](10-claude-skills-best-practices.md).
+[10-skill-claude-skills-best-practices.md](10-skill-claude-skills-best-practices.md).
 
 **`name`**
 
