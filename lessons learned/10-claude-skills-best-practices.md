@@ -312,26 +312,43 @@ anyway, because it adds the RED/GREEN testing and the description rule above.
 
 ## How our skills measure up (checked 2026-11-12)
 
-| Practice | planning | generating | healing | investigate-ci-failure | playwright-cli |
-|---|---|---|---|---|---|
-| `SKILL.md` under 500 lines | ✅ 76 | ✅ 82 | ✅ 65 | ✅ 93 | ✅ 493 (tight) |
-| "Use when..." description, triggers only | ✅ | ✅ | ✅ | ✅ | ✅ |
-| No first or second person | ✅ | ✅ | ✅ | ✅ | ✅ |
-| No time-sensitive information | ✅ | ✅ | ✅ | ✅ (date removed 2026-11-12) | ✅ |
-| References one level deep | n/a | n/a | n/a | n/a | ✅ all 10 linked from `SKILL.md` |
-| Table of contents on reference files over 100 lines | n/a | n/a | n/a | n/a | ✅ (added 2026-11-12) |
-| Scripts with tests | n/a | n/a | n/a | ✅ `scripts/` + `fixtures/` | n/a |
-| Tested with real scenarios | ✅ | ✅ | ✅ | ✅ | ✅ (description routing) |
-| Tested with Haiku, Sonnet and Opus | ❌ Sonnet only | ❌ | ❌ | ❌ | ❌ |
-| Gerund name | ✅ | ✅ | ✅ | ⚠️ action name | ⚠️ tool name |
+All eight skills pass these:
+
+- `SKILL.md` under 500 lines.
+- "Use when..." description, triggers only, no first or second person,
+  under 500 characters.
+- No time-sensitive information (`investigate-ci-failure` had a date,
+  removed 2026-11-12; the date in `knowledge-base.md` is an example value in
+  a template).
+- References one level deep; reference files over 100 lines have a table of
+  contents (only `playwright-cli` has any, added 2026-11-12).
+- Tested with real scenarios (logs in `docs/superpowers/skill-tests/`).
+
+Where they differ:
+
+| Skill | Lines | Words (target ~500) | Gerund name | Notes |
+|---|---|---|---|---|
+| `planning-playwright-tests` | 89 | ⚠️ 527 | ✅ | |
+| `generating-playwright-tests` | 98 | ❌ 687 | ✅ | Plan-first and framework-map steps |
+| `healing-playwright-tests` | 73 | ✅ 483 | ✅ | |
+| `investigate-ci-failure` | 93 | ❌ 971 | ⚠️ action name | Scripts and fixtures with tests |
+| `building-playwright-framework` | 100 | ⚠️ 544 | ✅ | Detail in 4 supporting files |
+| `mapping-existing-framework` | 64 | ✅ 460 | ✅ | Uses the build skill's map template |
+| `mapping-site-journeys` | 64 | ✅ 480 | ✅ | Has its own `map-template.md` |
+| `playwright-cli` | 493 | ❌ 1,854 | ⚠️ tool name | Shipped with the Playwright CLI |
 
 Notes:
 
+- **Over the word target:** `investigate-ci-failure` and
+  `generating-playwright-tests` are the ones to trim, by moving detail into
+  supporting files. `playwright-cli` is a reference-style skill that came
+  with the tool, so we leave it.
 - `playwright-cli` came with the Playwright CLI. We rewrote its description
   and added the tables of contents; the rest is as shipped.
 - The two non-gerund names are allowed alternatives, but they mix patterns.
   Renaming would break the links and routing tests, so we keep them.
-- **Open gap:** the skills have only been tested on Sonnet.
+- **Open gap:** every skill has only been tested on Sonnet, never Haiku or
+  Opus.
 
 ## Takeaways
 

@@ -7,8 +7,8 @@ description: Use when Playwright tests fail, time out, are flaky or broken when 
 
 ## Overview
 
-Find the real cause of each failure, fix **only the test file**, and prove it
-with a clean re-run. Fixes that belong in shared code are reported, not made.
+Find the real cause of each failure, **fix it where it lives**, and prove it
+with a clean re-run of everything that uses what you changed.
 
 ## When to use
 
@@ -19,6 +19,11 @@ with a clean re-run. Fixes that belong in shared code are reported, not made.
 
 ## Process
 
+0. **Read the framework map** (`framework-map.md` in the agent's memory): it
+   says where locators, fixtures and helpers live. No map and the user
+   declined mapping → fix things where the sibling tests keep them. No map
+   otherwise → stop and ask whether to map the tests first. Tests in the
+   map's "Legacy tests" folder follow the legacy rules.
 1. **Run** `npx playwright test "<path>"` with the project's normal settings.
    List every failing test. Read each full error and its
    `test-results/**/error-context.md`.
@@ -32,10 +37,13 @@ with a clean re-run. Fixes that belong in shared code are reported, not made.
    | The broken thing is in... | Do |
    |---|---|
    | the failing `.spec.ts` itself | Fix it there |
-   | a helper, fixture, page object or config used by more than one test | **Don't edit it.** Report the exact change you'd make |
+   | a page object, component, fixture, helper or config | **Fix it there** (a locator lives in its page object) |
    | the app (a real bug) | Don't "fix" the test to pass. Report the bug |
 
-5. **One fix at a time**, then re-run that test.
+5. **One fix at a time**, then re-run that test. After a shared fix, re-run
+   **the whole app project** (`npx playwright test --project=<app>`): specs
+   reach page objects through fixtures and the login, so a `Grep` for the
+   file name misses most of them.
 6. **Can't fix it, and you're confident the test is right?** Add
    `test.fixme()` with a comment before the failing step saying what happens
    instead. Never delete a test.
@@ -51,15 +59,15 @@ with a clean re-run. Fixes that belong in shared code are reported, not made.
 
 ```
 Healed: <test> — <root cause> — <fix>
+Framework changes: <shared file> — <change> — <specs re-run>   (or "none")
 Marked fixme: <test> — <why>            (or "none")
-Not changed (needs your OK): <file> — <proposed change> — <tests affected>
 Final run: <summary line, quoted>
 ```
 
 ## Common mistakes
 
-- Editing a shared helper because "every test picks up the fix". That's a
-  framework change, so report it.
+- Patching the spec (or adding a locator override in it) when the broken
+  locator lives in a page object. Fix the page object.
+- Re-running only the test you were asked about after a shared fix. Re-run
+  every spec that uses the changed file.
 - Guessing a locator from other tests instead of looking at the page.
-- Calling it healed while tests that depend on an unchanged helper still fail.
-  List them under "Not changed".

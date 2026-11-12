@@ -48,3 +48,28 @@ fresh `sonnet` general-purpose subagent.
 - **GREEN (step 0 added):** "Skill step 0: no plan covers this scenario, so
   load planning-playwright-tests", passing the user's steps so the scenario
   is written to `specs/` first, then generated from it. ✅
+
+## 2026-11-12: follow the framework map (plan Task 6)
+
+Prompt: "Write the test for: log in as standard_user, sort products by price
+low to high, the first product is Sauce Labs Onesie."
+
+### RED: old skill, standard framework present
+
+No failure seen: the agent copied the existing fixtures, added `sortDropdown`,
+`itemNames` and `sortBy()` to the inventory page object, the spec had no raw
+locators, `1 passed`. The update is still needed because the skill's own
+example used raw `page.locator(...)` (contradicting the standard framework)
+and it had no "read the framework map" step for `existing` repos.
+
+### GREEN: new skill
+
+| Case | Result |
+|------|--------|
+| G1 decision `standard` | ✅ Read the map; spec uses fixtures and page-object methods only (grep clean); locators and `sortBy()` added to the page object; walked live; `1 passed`. |
+| G2 decision `existing` (raw-locator repo) | ✅ Followed the map: `@playwright/test`, `[data-test=...]` locators, full URLs, header comments, numbered steps, `test.describe('Swag Labs critical path')`; no `apps/` or page objects created; `1 passed`. |
+
+**Merged with plan-first (2026-11-12):** this branch was built before the
+plan-first step existed, so the map step became step 1 and plan-first stays
+step 0. The two together have not been re-run: G1 and G2 above were run
+without the plan-first step.
