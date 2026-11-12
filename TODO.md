@@ -4,40 +4,22 @@ Open this first when we start working again.
 
 ## Next up
 
-1. [ ] **Watch the video on ARIA snapshots:**
-   https://www.youtube.com/watch?v=P4R6hnsE0UY&t=241s (starts at 4:01)
-2. [ ] **Write a new set of tests** based on what we learn in that video.
-3. [ ] **Finish this video:** https://www.youtube.com/watch?v=6CaQ9ZFuuKI
-4. [ ] **Test the overall flow end to end,** and understand the YAML files and
+1. [ ] **Test the overall flow end to end,** and understand the YAML files and
    the flow logic better. *(Reminder to myself.)*
    - Start with the diagrams in `lessons learned/08-ci-investigator.md`.
    - The files: `.github/workflows/playwright.yml`, `claude.yml` and
      `investigate-ci.yml`.
-5. [ ] **Implement a self-learning mechanism.** Build it up from reviews, like
+2. [ ] **Implement a self-learning mechanism.** Build it up from reviews, like
    a lessons-learned log, basically like the memory file the agent uses.
    *(Started 2026-11-10: qa-tester has `memory: project` in
    `.claude/agent-memory/qa-tester/`, seeded with what we learned. Still to
    do: test it with two calls (save, then recall), and decide whether review
    findings should feed into it.)*
-6. [ ] **Confirm API testing in the framework skill.** Check whether
+3. [ ] **Confirm API testing in the framework skill.** Check whether
    `building-playwright-framework` covers API tests, and how.
-7. [ ] **Confirm contract testing.** Check whether the framework covers
+4. [ ] **Confirm contract testing.** Check whether the framework covers
    contract tests, and how.
-8. [ ] **Set up a site skill for exploratory testing.**
-
-## Carried over from last session (2026-11-06)
-
-- [ ] **First live test of `@claude investigate`** on `main`: comment exactly
-  `@claude investigate` (one space, lowercase). It only works now that the
-  change is merged.
-- [ ] **Known gaps** in the CI investigator (details in
-  `lessons learned/08-ci-investigator.md`, "Known gaps"):
-  - the trigger phrase is strict: spacing and capital letters break it;
-  - the report name isn't fixed by the run ID yet;
-  - no `failed.log` when the test job fails before any test runs;
-  - Claude's tool list is broader than it needs to be.
-- [ ] **Delete the `ci-investigator-auto-run` branch.** Everything in it is
-  in `main`.
+5. [ ] **Set up a site skill for exploratory testing.**
 
 ## Notes to myself
 
