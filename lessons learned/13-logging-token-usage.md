@@ -2,7 +2,7 @@
 
 How we made every Claude job on GitHub log the tokens used by each API call,
 so we can see what the investigator, `@claude` and the code review actually
-cost. Follows on from [06-cli-vs-mcp-pricing.md](06-cli-vs-mcp-pricing.md)
+cost. Follows on from [03-cli-vs-mcp-pricing.md](03-cli-vs-mcp-pricing.md)
 and [08-ci-investigator.md](08-ci-investigator.md).
 
 Sources:

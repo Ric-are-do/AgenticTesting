@@ -192,7 +192,7 @@ The report is an artifact on the **Claude Code** run that the comment started.
 | Claude's tools | `gh run`, `playwright-cli`, `git log/diff/show`, Read, Write, Edit, Glob, Grep | `--allowedTools` |
 
 One investigation costs about **$0.40–0.65** in list-price terms on Opus
-([06-cli-vs-mcp-pricing.md](06-cli-vs-mcp-pricing.md)). On CI it counts
+([03-cli-vs-mcp-pricing.md](03-cli-vs-mcp-pricing.md)). On CI it counts
 against the Claude plan's usage limits, through `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Lessons learned
@@ -255,5 +255,5 @@ against the Claude plan's usage limits, through `CLAUDE_CODE_OAUTH_TOKEN`.
   broken-install cases.
 
 See also [02-cli-vs-mcp.md](02-cli-vs-mcp.md),
-[06-cli-vs-mcp-pricing.md](06-cli-vs-mcp-pricing.md) and
+[03-cli-vs-mcp-pricing.md](03-cli-vs-mcp-pricing.md) and
 [07-public-vs-private-repo.md](07-public-vs-private-repo.md).

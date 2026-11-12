@@ -98,6 +98,11 @@ How to read it:
 - The **solid arrows** are the normal QA cycle. You plan, then generate the
   tests from the plan, then run them. Local failures go to healing; CI
   failures go to the investigator.
+- **Planning always comes first.** The generator's step 0 requires the
+  scenario to be in a plan in `specs/`. If it isn't, even when you gave the
+  steps yourself, it loads the planner first and then writes the test from
+  that plan. That's the one hard link between two skills; the plan file is
+  the hand-off between them.
 - The **dotted arrows** show that every Playwright skill drives the browser
   through `playwright-cli`. Nothing uses the `playwright-test` MCP server.
 - **Every path ends in the same report.** Anything the tester wasn't allowed

@@ -40,7 +40,8 @@ user's prompt against each description to decide whether, and when, to invoke
 a skill, workflow or protocol.
 
 So a vague description means the skill doesn't fire, or fires at the wrong
-time. Say what it does and when to use it.
+time. In our skills the description says **when** to use the skill, not what
+it does (see "Our rule" below).
 
 ### 3. Knowledge organization and filtering
 
@@ -118,12 +119,30 @@ For the full skill guidance, see
 - Must be non-empty.
 - Maximum 1,024 characters.
 - Cannot contain XML tags.
-- Should describe what the skill does **and when to use it**.
+- The Claude docs say it should describe what the skill does and when to use
+  it.
+
+**Our rule for `description`** (from the superpowers `writing-skills` skill,
+which we follow for all our skills):
+
+- Start with **"Use when..."** and describe only the **triggering
+  conditions**: the situations, symptoms and keywords that mean the skill
+  applies.
+- **Never summarise the skill's steps.** Agents that see the steps in the
+  description tend to follow the description and skip the skill body.
+- Write in the third person (never "I can..." or "You can..."), and stay
+  under about 500 characters.
+- Say when **not** to use it if another skill is easy to confuse with it.
+
+This is where we differ from the Claude docs: our descriptions leave out
+"what it does" on purpose. Routing was tested with this form: 35/35 with all
+5 skills (see `docs/superpowers/skill-tests/skill-descriptions.md` and
+`healing-playwright-tests.md` in the same folder).
 
 ```markdown
 ---
 name: investigate-ci-failure
-description: What the skill does, and when to use it.
+description: Use when Playwright tests failed in GitHub Actions or CI, such as "why did CI fail" or a failed run ID. Not for tests that fail when run locally.
 ---
 
 # Skill body starts here
@@ -137,7 +156,8 @@ description: What the skill does, and when to use it.
    frontmatter.
 3. **The opening `---` has to be the first line.** Anything above it, even a
    blank line, can stop the block from being recognised.
-4. **In a skill, the `description` is the trigger.** Write what the skill does
-   and when to use it, within 1,024 characters.
+4. **In a skill, the `description` is the trigger.** Start with "Use when...",
+   name the triggering conditions only, never the steps, and stay well within
+   1,024 characters (aim for under 500).
 5. **Frontmatter is what the agent reads first.** Keep it short so the
    context window isn't spent on skills that aren't needed.

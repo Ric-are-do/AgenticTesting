@@ -1,11 +1,20 @@
 # claude.yml Explained
 
-The file `/install-github-app` adds at `.github/workflows/claude.yml`, as it
-was installed (PR #1, before any of our edits). The comments below are added
-here to explain each part. They are not in the real file.
+The workflow file `.github/workflows/claude.yml` in two parts:
+
+1. **The default file:** what `/install-github-app` adds, explained line by
+   line.
+2. **Our version:** what we changed, and why.
 
 What it does in one line: when someone writes `@claude` in an issue or PR,
 this workflow starts Claude on a GitHub machine and Claude does what was asked.
+
+---
+
+## Part 1. The default file
+
+As it was installed (PR #1, before any of our edits). The comments below are
+added here to explain each part. They are not in the real file.
 
 ```yaml
 name: Claude Code                 # Name shown in the Actions tab
@@ -66,7 +75,7 @@ jobs:                             # Work to do. This file has one job
           #                         #   e.g. --max-turns, --allowedTools
 ```
 
-## Things to notice
+### Things to notice
 
 - **Many runs start, few do work.** Every new comment or issue starts the
   workflow, and the `if:` then skips it unless `@claude` appears. Skipped runs
@@ -75,16 +84,49 @@ jobs:                             # Work to do. This file has one job
   inputs: no `prompt` means it waits for `@claude`; a `prompt` means it runs
   right away.
 - **No limits by default.** The installed file has no turn limit, no job
-  timeout and no tool list. See the "Things to remember" section in
-  `03-github-and-claude-setup.md`.
+  timeout and no tool list. See the "Lessons learned" section in
+  [04-github-and-claude-setup.md](04-github-and-claude-setup.md).
 - **Read-only token.** All four permissions are `read` except `id-token`. Claude
   can look at things but the job's own token cannot write to the repo.
 
-## What we changed afterwards
+---
+
+## Part 2. Our version
+
+The triggers, permissions, checkout and Claude step are the same as the default.
+We changed the following.
+
+### Changes to the `claude` job (the general `@claude` assistant)
 
 | Change | Why |
 |---|---|
-| Steps to install Node, dependencies, Chromium and Playwright CLI | The investigator skill needs them |
-| `env:` with `GH_TOKEN` and `GH_REPO` | The skill's script uses `gh` |
-| `claude_args:` with `--max-turns 30` and `--allowedTools` | Limit the run and allow only the tools the skill and reviews need |
-| An upload step for `reports/` | Keep the skill's report as the `ci-failure-report` artifact |
+| `&& !contains(..., '@claude investigate')` added to every condition in `if:` | A comment that says `@claude investigate` belongs to the CI investigator, not the general assistant. Without this, both would start. |
+| `env:` with `GH_TOKEN` and `GH_REPO` on the Claude step | So Claude can use the `gh` command against this repo. |
+| `claude_args:` with `--max-turns 30` | Caps the length (and so the cost) of a run. |
+| `claude_args:` with `--allowedTools "mcp__github_inline_comment__create_inline_comment"` | Allows only posting inline PR comments as an extra tool. |
+| A final step "Log Claude token usage" | Prints the input, output and cache tokens of each call to the log and job summary. It always runs, and a failure there never fails the job. See [13-logging-token-usage.md](13-logging-token-usage.md). |
+
+### Two new jobs for `@claude investigate`
+
+| Job | What it does |
+|---|---|
+| `parse` | Starts only when the author is the owner, a member or a collaborator, because an investigation costs Claude usage. Reads the optional run ID from the comment (`@claude investigate 12345` or `@claude investigate run 12345`) and, on a PR, the PR's branch. |
+| `investigate` | Runs after `parse` and calls the reusable workflow `investigate-ci.yml`, passing the run ID and branch, with `same_run: false` (the evidence comes from an earlier run, not this one). |
+
+```mermaid
+flowchart TD
+    c["Comment, issue or review<br/>containing @claude"] --> q{"Contains<br/>'@claude investigate'?"}
+    q -->|"no"| claude["job: claude<br/>general assistant"]
+    q -->|"yes"| who{"Owner, member<br/>or collaborator?"}
+    who -->|"no"| none["Nothing runs"]
+    who -->|"yes"| parse["job: parse<br/>run ID + PR branch"]
+    parse --> inv["job: investigate<br/>calls investigate-ci.yml"]
+```
+
+### What is no longer in this file
+
+An earlier version of this file also installed Node, the dependencies,
+Chromium and the Playwright CLI, and uploaded `reports/` as the
+`ci-failure-report` artifact. That work now lives in `investigate-ci.yml`, which
+is shared by this file and by `playwright.yml`. See
+[08-ci-investigator.md](08-ci-investigator.md) for the full picture.

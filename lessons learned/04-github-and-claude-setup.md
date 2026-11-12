@@ -121,6 +121,29 @@ What happened in this repo on 2026-11-04, read from the run list:
 4. On PR #3, **Playwright Tests** passed and **Claude Code Review** ran.
 5. PR #3 was merged.
 
+That is how the loop worked on that day. Two things have changed since:
+
+- **The review no longer runs on every PR.** `claude-code-review.yml` is now
+  started by hand (`workflow_dispatch`, with a PR number), so step 4 is no
+  longer automatic.
+- **A failed test run now starts an investigation.** `playwright.yml` calls
+  the CI investigator, and `@claude investigate` comments are routed to it
+  instead of the general assistant. See
+  [08-ci-investigator.md](08-ci-investigator.md).
+
+The loop today:
+
+```mermaid
+flowchart TD
+    push["Push or PR"] --> tests["playwright.yml<br/>runs the tests"]
+    tests -->|"pass"| ok["Done"]
+    tests -->|"fail"| inv["CI investigator<br/>writes a ci-failure-report"]
+    inv --> mention["Open an issue or comment<br/>with @claude"]
+    mention --> fix["claude.yml<br/>Claude opens a fix PR"]
+    fix --> tests
+    fix -.->|"on request"| review["claude-code-review.yml<br/>started by hand"]
+```
+
 ## Where the Claude review shows up
 
 Claude Code Review posts **inline comments on the PR** (Files changed tab).

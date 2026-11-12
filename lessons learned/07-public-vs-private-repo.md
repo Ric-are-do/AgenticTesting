@@ -108,5 +108,5 @@ restored.
 4. **Keep forks out of secret-spending jobs.** If the repo is ever public
    again, skipping fork PRs in `playwright.yml` still matters.
 
-See also [06-cli-vs-mcp-pricing.md](06-cli-vs-mcp-pricing.md) for what each
+See also [03-cli-vs-mcp-pricing.md](03-cli-vs-mcp-pricing.md) for what each
 Claude investigation costs.

@@ -59,10 +59,18 @@ The server itself comes from `.mcp.json`:
 
 ## Where the CLI fits in this project
 
-The CLI is installed too. `.claude/skills/playwright-cli/` is a skill that
-teaches the main Claude session to use it, and `.playwright-cli/` holds the
-logs and page snapshots it saves. The CLI belongs to the **main session**. The
-three **agents** never touch it.
+The CLI is the browser tool for all QA work. `.claude/skills/playwright-cli/`
+teaches Claude to use it, and `.playwright-cli/` holds the logs and page
+snapshots it saves.
+
+- The four QA skills (`planning-playwright-tests`,
+  `generating-playwright-tests`, `healing-playwright-tests` and
+  `investigate-ci-failure`) all drive the browser with `playwright-cli`. None
+  of them mention MCP.
+- The `qa-tester` agent does its browser work through those skills, so it uses
+  the CLI too.
+- The three older agents (`playwright-test-planner`, `-generator`, `-healer`)
+  are the only users of the MCP server. No skill or `qa-tester` refers to them.
 
 ## Two other Playwright MCP servers in this session
 
@@ -72,7 +80,18 @@ use it. They are wired only to `mcp__playwright-test__*`.
 
 ## When to pick which
 
-- **MCP agents:** planning, generating and healing a test suite, where the
-  agent needs to save plans, write specs and run tests.
-- **CLI:** a quick look at a page, a one-off check, or anything where you want
-  commands and files you can read and replay.
+- **CLI (the default):** every QA workflow in this project: planning,
+  generating, healing and CI investigation. The skills are built on it, it
+  saves snapshots to files instead of filling the conversation, and it cost
+  less in our measurements (about 14% cheaper on a multi-step flow, same
+  quality, no difference on a single page). See
+  [03-cli-vs-mcp-pricing.md](03-cli-vs-mcp-pricing.md).
+- **MCP (the exception):** only the three older `playwright-test-*` agents, or
+  an agent that has no shell. The server-only tools (`planner_save_plan`,
+  `generator_write_test`, `test_run`, `test_debug`) are not needed by the
+  skills: tests are written with the Write tool and run with
+  `npx playwright test`.
+
+**Cleanup candidates:** the three MCP agents in `.claude/agents/` and the
+`playwright-test` entry in `.mcp.json` are no longer used by the QA workflow.
+They have not been removed yet.

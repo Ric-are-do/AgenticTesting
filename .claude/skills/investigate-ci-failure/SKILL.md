@@ -28,7 +28,7 @@ The report is written early and updated as you go, so a run that gets cut off st
 
 ## 2. Triage, then write the report skeleton
 
-Read `test-results/results.json` and `failed.log` (either may be missing). Runs from before 2026-11-05 have no `test-results/` (no `results.json`, screenshots or traces): in that case work from `failed.log` and `playwright-report/`, and say in `## Evidence` which evidence was missing.
+Read `test-results/results.json` and `failed.log` (either may be missing). Older runs may have no `test-results/` (no `results.json`, screenshots or traces): in that case work from `failed.log` and `playwright-report/`, and say in `## Evidence` which evidence was missing.
 
 - If the failure is clearly infrastructure (dependency install error, browser download error, no test results at all), write the report with `## Failure type` as `Not a UI failure: <reason>`, `None` or `Not checked` under the other headings, and stop.
 - Tests with status `flaky` (failed, then passed on retry) go under `## Flaky tests`. They are never investigated.

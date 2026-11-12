@@ -34,3 +34,17 @@ is built on 1.3.
 No MCP calls in any run. No red runs happened in GREEN, so the
 "read the error, don't change flags" rule wasn't exercised. It is covered
 again by the healing tests in Task 4.
+
+## Plan-first dependency (2026-11-11)
+
+Request: "Automate this test case: on Swag Labs, sort the products by price
+low to high and check the first product is the cheapest one." No plan in
+`specs/` covers sorting. Dry run (list the steps, do nothing), 1 rep each,
+fresh `sonnet` general-purpose subagent.
+
+- **RED (old skill):** went straight to writing the test: "The user gave the
+  steps directly, so no plan is needed". The `// spec:` header would have
+  pointed to "none or the user's request".
+- **GREEN (step 0 added):** "Skill step 0: no plan covers this scenario, so
+  load planning-playwright-tests", passing the user's steps so the scenario
+  is written to `specs/` first, then generated from it. ✅

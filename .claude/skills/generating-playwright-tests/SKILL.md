@@ -13,12 +13,17 @@ before you write it**, then run the file and read the result honestly.
 
 ## When to use
 
-- A plan in `specs/` (or steps from the user) needs turning into `.spec.ts`.
+- A scenario in a plan in `specs/` needs turning into `.spec.ts`.
 - Not for deciding what to test (use planning-playwright-tests) or fixing
   existing failing tests (use healing-playwright-tests).
 
 ## Process
 
+0. **Plan first (REQUIRED: planning-playwright-tests).** Every test comes
+   from a scenario in a plan in `specs/`. No plan has this scenario, even
+   when the user gave the steps themselves? Load planning-playwright-tests,
+   pass it the user's steps, let it write the scenario to `specs/`, then
+   come back here.
 1. **Read the scenario** and its group's `**Seed:**` and `**File:**`.
 2. **Seed:**
    - seed file missing → create it: a `test.describe('<App> seed')` with a
@@ -68,6 +73,9 @@ test.describe('Swag Labs Cart', () => {                          // group title
 
 ## Common mistakes
 
+- Skipping the plan because "the user gave the steps, so no plan is
+  needed". Their steps go to planning first; a `// spec:` header must point
+  to a real plan.
 - Copying locators from the plan without checking them live.
 - Dropping the step comments in multi-step tests.
 - Skipping a missing seed because "this scenario doesn't need it".

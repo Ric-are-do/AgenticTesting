@@ -4,7 +4,14 @@ How to write skills that Claude can find and use well. This follows on from
 [09-frontmatter.md](09-frontmatter.md), which covers the frontmatter itself.
 
 Source: [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-(Claude docs).
+(Claude docs). Checked against the live page on 2026-11-12.
+
+**Where we differ:** we write our skills with the superpowers
+`writing-skills` skill. Where it and the Claude docs disagree, we follow
+superpowers. The two differences are the **description** (when only, not
+what) and the **body length target** (about 500 words). Both are marked
+"Our rule" below. [11-qa-tester-super-agent.md](11-qa-tester-super-agent.md)
+shows how we applied them.
 
 Good skills are **concise, well-structured and tested with real usage.**
 
@@ -70,9 +77,14 @@ Avoid:
 - reserved words: `anthropic-helper`, `claude-tools`;
 - mixing patterns inside one skill collection.
 
+Superpowers agrees: verb-first, gerund names (`creating-skills`, not
+`skill-creation`). New skills here use the gerund form.
+
 ### Descriptions
 
 The `description` is how Claude picks one skill out of potentially 100+.
+
+What the Claude docs say:
 
 - **Say what it does and when to use it,** with the key terms and triggers.
 - **Write in third person.** The description is injected into the system
@@ -81,10 +93,27 @@ The `description` is how Claude picks one skill out of potentially 100+.
   - Avoid: "I can help you process Excel files."
   - Avoid: "You can use this to process Excel files."
 
-Good:
+**Our rule (superpowers): say when, never what or how.**
+
+- Start with **"Use when..."** and name only the triggering conditions:
+  situations, symptoms and keywords.
+- **Leave out what the skill does and its steps.** Superpowers found that
+  when a description summarises the workflow, an agent may follow the
+  description and skip the skill body.
+- Third person still applies: no "I" or "you". "Use when..." is neither.
+- Stay under about 500 characters (the hard limit is 1,024).
+- Say when **not** to use it if another skill is easy to confuse with it.
+
+Ours:
 
 ```yaml
-description: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+description: Use when Playwright tests fail, time out, are flaky or broken when run locally, such as "this test is failing", "locator not found" or "Timeout exceeded". For failures in a GitHub Actions or CI run, use investigate-ci-failure instead.
+```
+
+Avoid (summarises the steps):
+
+```yaml
+description: Use when tests fail - reproduces the failure, inspects the page with playwright-cli, then fixes the locator.
 ```
 
 Too vague:
@@ -99,7 +128,9 @@ description: Does stuff with files
 
 `SKILL.md` is an overview that points to detail, like a table of contents.
 
-- **Keep the `SKILL.md` body under 500 lines.**
+- **Keep the `SKILL.md` body under 500 lines.** That is the hard ceiling.
+- **Our rule (superpowers):** aim for about 500 words, so the body stays
+  short and scannable.
 - When it gets close, split content into separate files.
 - Claude reads the extra files only when it needs them. Files that aren't
   read cost no context.
@@ -204,9 +235,9 @@ real problems and not imagined ones.
 
 Observe what Claude B does, take the specifics back to Claude A ("it forgot
 to filter by date for Q4"), update, and test again. Skills improve from
-observed behaviour, not assumptions. You don't need a special "writing
-skills" skill for this: ask Claude to create a skill and it produces a
-properly structured `SKILL.md`.
+observed behaviour, not assumptions. The Claude docs say you don't need a
+special "writing skills" skill for this. We use superpowers `writing-skills`
+anyway, because it adds the RED/GREEN testing and the description rule above.
 
 ### Watch how Claude navigates the skill
 
@@ -249,46 +280,67 @@ properly structured `SKILL.md`.
 **Core quality**
 
 - [ ] Description is specific and includes key terms
-- [ ] Description says what the skill does and when to use it
-- [ ] `SKILL.md` body is under 500 lines
-- [ ] Extra detail is in separate files
-- [ ] No time-sensitive information
+- [ ] Description starts "Use when...", names triggers only, no steps
+  (our rule; the Claude docs say "what it does and when")
+- [ ] `SKILL.md` body is under 500 lines (aim for about 500 words)
+- [ ] Extra detail is in separate files (if needed)
+- [ ] Progressive disclosure used appropriately
+- [ ] No time-sensitive information (or in an "old patterns" section)
 - [ ] Consistent terminology
 - [ ] Examples are concrete, not abstract
 - [ ] File references are one level deep
+- [ ] Reference files over 100 lines have a table of contents
 - [ ] Workflows have clear steps
 
 **Code and scripts**
 
 - [ ] Scripts solve problems and don't defer to Claude
 - [ ] Error handling is explicit and helpful
-- [ ] No magic numbers
-- [ ] Required packages are listed
+- [ ] No magic numbers (every value justified)
+- [ ] Required packages are listed and verified as available
+- [ ] Scripts have clear documentation
 - [ ] Forward slashes in all paths
 - [ ] Validation steps for critical operations
+- [ ] Feedback loops for quality-critical tasks
 
 **Testing**
 
 - [ ] At least three evaluations
 - [ ] Tested with Haiku, Sonnet and Opus
 - [ ] Tested with real usage scenarios
-- [ ] Team feedback incorporated
+- [ ] Team feedback incorporated (if applicable)
 
-## How our skills measure up (checked 2026-11-10)
+## How our skills measure up (checked 2026-11-12)
 
-| Skill | `SKILL.md` length | Notes |
-|---|---|---|
-| `investigate-ci-failure` | 93 lines | Well under 500. Scripts live in `scripts/`. Its description starts with a command ("Investigate why...") and not third person ("Investigates why..."). |
-| `playwright-cli` | 493 lines | Just under the 500 limit. It already has a `references/` folder for the detail. |
+| Practice | planning | generating | healing | investigate-ci-failure | playwright-cli |
+|---|---|---|---|---|---|
+| `SKILL.md` under 500 lines | ✅ 76 | ✅ 82 | ✅ 65 | ✅ 93 | ✅ 493 (tight) |
+| "Use when..." description, triggers only | ✅ | ✅ | ✅ | ✅ | ✅ |
+| No first or second person | ✅ | ✅ | ✅ | ✅ | ✅ |
+| No time-sensitive information | ✅ | ✅ | ✅ | ✅ (date removed 2026-11-12) | ✅ |
+| References one level deep | n/a | n/a | n/a | n/a | ✅ all 10 linked from `SKILL.md` |
+| Table of contents on reference files over 100 lines | n/a | n/a | n/a | n/a | ✅ (added 2026-11-12) |
+| Scripts with tests | n/a | n/a | n/a | ✅ `scripts/` + `fixtures/` | n/a |
+| Tested with real scenarios | ✅ | ✅ | ✅ | ✅ | ✅ (description routing) |
+| Tested with Haiku, Sonnet and Opus | ❌ Sonnet only | ❌ | ❌ | ❌ | ❌ |
+| Gerund name | ✅ | ✅ | ✅ | ⚠️ action name | ⚠️ tool name |
+
+Notes:
+
+- `playwright-cli` came with the Playwright CLI. We rewrote its description
+  and added the tables of contents; the rest is as shipped.
+- The two non-gerund names are allowed alternatives, but they mix patterns.
+  Renaming would break the links and routing tests, so we keep them.
+- **Open gap:** the skills have only been tested on Sonnet.
 
 ## Takeaways
 
 1. **Every token in `SKILL.md` has to earn its place.** Claude already knows
    a lot; only add what it doesn't.
-2. **The description decides whether the skill fires.** Third person, what it
-   does, when to use it.
-3. **Keep `SKILL.md` under 500 lines** and push detail into files one level
-   down.
+2. **The description decides whether the skill fires.** "Use when...",
+   triggers only, never the steps.
+3. **Keep `SKILL.md` under 500 lines** (aim for about 500 words) and push
+   detail into files one level down.
 4. **Fragile steps get exact scripts; open-ended steps get guidance.**
 5. **Validate in a loop,** and for risky work plan, validate, then execute.
 6. **Build evaluations first and test on real tasks.** Improve the skill from
