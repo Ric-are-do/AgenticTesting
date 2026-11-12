@@ -19,17 +19,11 @@ Open this first when we start working again.
    `.claude/agent-memory/qa-tester/`, seeded with what we learned. Still to
    do: test it with two calls (save, then recall), and decide whether review
    findings should feed into it.)*
-6. [x] **Go with the super agent model** (done 2026-11-10: `.claude/agents/qa-tester.md`
-   + 3 new skills; spec in `docs/superpowers/specs/2026-11-10-qa-tester-super-agent-design.md`,
-   test logs in `docs/superpowers/skill-tests/`. Real `@agent-qa-tester` call
-   checked by the user after a restart: works.) One
-   generic agent with multiple skills as a toolbox, e.g. use this skill when
-   doing tests, use that skill when doing code. Claude knows which skill to
-   use.
-7. [x] **Cover frontmatter and add it to all our skills.** (done 2026-11-10: all 5
-   skills use "Use when..." trigger-only descriptions; routing tested 35/35.) The frontmatter
-   lesson is in `lessons learned/09-skill-frontmatter.md`. Add `name` and
-   `description` frontmatter to every skill in `.claude/skills/`.
+6. [ ] **Confirm API testing in the framework skill.** Check whether
+   `building-playwright-framework` covers API tests, and how.
+7. [ ] **Confirm contract testing.** Check whether the framework covers
+   contract tests, and how.
+8. [ ] **Set up a site skill for exploratory testing.**
 
 ## Carried over from last session (2026-11-06)
 
