@@ -19,20 +19,30 @@ open the app, stop and say so; don't write a plan from general knowledge.
 
 ## Process
 
-1. **Read what exists.** Read every plan in `specs/` and list the tests in
-   `tests/`. Don't plan scenarios that are already covered; refer to them.
-2. **Find the seed.** Use the seed spec for that app area (for example,
-   `tests/swag Lab tests/seed.spec.ts`). If none exists, name the path the
-   generator should create next to the area's tests.
-3. **Explore the live app with playwright-cli** (REQUIRED: the playwright-cli
-   skill for commands). Open the URL, take snapshots, and walk every journey
-   you'll plan, including the error paths. Note the real text, URLs and
-   `data-test` attributes you see.
-4. **Design the scenarios:** happy paths, edge cases, and errors or
+1. **Read the framework map** (`framework-map.md` in the agent's memory). It
+   says where plans, seeds and tests go. No map → stop and go back to the
+   agent's map check.
+2. **Read what exists.** Search the frontmatter in `docs/apps/<app>/` first
+   (e.g. `Grep` for `^description:`) and open only the files that match. No
+   `journey-map.md` → run mapping-site-journeys first, **as its own complete
+   step**: the whole site, under its read-only rules, finished and saved
+   before you start planning. Read the plans in
+   `specs/<app>/` and list the tests. Don't plan what's already covered.
+3. **Find the seed** where the map says (standard: `tests/<app>/seed.spec.ts`).
+   If none exists, name that path for the generator to create.
+4. **Explore live, only the area you're planning** (REQUIRED: playwright-cli),
+   starting from the journey map. Walk every journey you'll plan, including
+   error paths. Note the real text, URLs and test ids you see.
+5. **Design the scenarios:** happy paths, edge cases, and errors or
    validation. Each one starts from a fresh browser, is independent of the
    others, and is specific enough for any tester to follow.
-5. **Write the plan** to `specs/<app-area>.md` in the format below.
-6. **Close the browser** (`playwright-cli close`).
+6. **Write the plan** to `specs/<app>/<area>.md` (or where the map says) in
+   the format below. `**File:**` paths follow the map (standard:
+   `tests/<app>/ui/`).
+7. **Save what you learned** about the app (rules, quirks, exact behaviour)
+   to `docs/apps/<app>/<area>.md` with the five frontmatter fields (`app`,
+   `area`, `title`, `description`, `updated`). Never a password.
+8. **Close the browser** (`playwright-cli close`).
 
 ## Plan format (required)
 
@@ -70,6 +80,8 @@ open the app, stop and say so; don't write a plan from general knowledge.
 ## Common mistakes
 
 - Writing expected text from memory. The live text often differs.
+- Reading every doc in `docs/apps/` instead of scanning frontmatter.
+- Learning how the app behaves and keeping it only in the plan.
 - Skipping the existing `specs/`, and duplicating a scenario.
 - Steps that depend on an earlier scenario's state.
 - Inventing your own plan layout. The generator relies on `**Seed:**`,

@@ -34,3 +34,23 @@ is built on 1.3.
 No MCP calls in any run. No red runs happened in GREEN, so the
 "read the error, don't change flags" rule wasn't exercised. It is covered
 again by the healing tests in Task 4.
+
+## 2026-11-12: follow the framework map (plan Task 6)
+
+Prompt: "Write the test for: log in as standard_user, sort products by price
+low to high, the first product is Sauce Labs Onesie."
+
+### RED: old skill, standard framework present
+
+No failure seen: the agent copied the existing fixtures, added `sortDropdown`,
+`itemNames` and `sortBy()` to the inventory page object, the spec had no raw
+locators, `1 passed`. The update is still needed because the skill's own
+example used raw `page.locator(...)` (contradicting the standard framework)
+and it had no "read the framework map" step for `existing` repos.
+
+### GREEN: new skill
+
+| Case | Result |
+|------|--------|
+| G1 decision `standard` | ✅ Read the map; spec uses fixtures and page-object methods only (grep clean); locators and `sortBy()` added to the page object; walked live; `1 passed`. |
+| G2 decision `existing` (raw-locator repo) | ✅ Followed the map: `@playwright/test`, `[data-test=...]` locators, full URLs, header comments, numbered steps, `test.describe('Swag Labs critical path')`; no `apps/` or page objects created; `1 passed`. |

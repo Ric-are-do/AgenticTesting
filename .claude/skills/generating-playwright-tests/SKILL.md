@@ -19,10 +19,19 @@ before you write it**, then run the file and read the result honestly.
 
 ## Process
 
+0. **Read the framework map** (`framework-map.md` in the agent's memory) and
+   follow its decision and rules. No map → go back to the agent's map check.
+   - `standard`: import `test`/`expect` from `@apps/<app>/fixtures`; use
+     page-object fixtures only, never `page.locator` / `page.getBy*` or
+     `new XPage(page)` in a spec. A missing locator or method goes into the
+     page object (rules: building-playwright-framework).
+   - `existing`: write it the way the map's rules and the sibling specs do,
+     even if that means raw locators. Don't impose page objects.
 1. **Read the scenario** and its group's `**Seed:**` and `**File:**`.
 2. **Seed:**
-   - seed file missing → create it: a `test.describe('<App> seed')` with a
-     `test('seed')` that only does the `page.goto` to the app URL;
+   - seed file missing → create it: `test.describe('<App> seed')` with a
+     `test('seed')` that only opens the app's start page, in the map's style
+     (standard: a page-object `goto()` through the app's fixtures);
    - seed exists → read it and never edit it. If it looks wrong for this
      scenario, do the setup inside the test and say so in your report.
 3. **Walk it live** (REQUIRED: the playwright-cli skill for commands). Run
@@ -41,23 +50,24 @@ before you write it**, then run the file and read the result honestly.
 
 ## File format (required)
 
-```ts
-// spec: specs/swag-labs-cart.md
-// seed: tests/swag Lab tests/seed.spec.ts
+Standard framework (an `existing` map keeps its own style, same comments):
 
-import { test, expect } from '@playwright/test';
+```ts
+// spec: specs/swag-labs/cart.md
+// seed: tests/swag-labs/seed.spec.ts
+
+import { test, expect } from '@apps/swag-labs/fixtures';
 
 test.describe('Swag Labs Cart', () => {                          // group title
-  test('Continue Shopping returns to inventory and keeps cart state', async ({ page }) => {
+  test('Continue Shopping returns to inventory and keeps cart state', async ({ inventoryPage }) => {
     // 1. Login as standard_user, add the backpack, click the cart link.
-    await page.goto('https://www.saucedemo.com/');
-    await page.locator('[data-test=username]').fill('standard_user');
-    // ...
-    await expect(page).toHaveURL(/\/cart\.html/);
+    await inventoryPage.goto();                                  // starts logged in
+    await inventoryPage.addToCart('sauce-labs-backpack');
+    const cart = await inventoryPage.openCart();
 
-    // 2. Click [data-test=continue-shopping].
-    await page.locator('[data-test=continue-shopping]').click();
-    await expect(page.locator('[data-test=shopping-cart-badge]')).toHaveText('1');
+    // 2. Click Continue Shopping.
+    const inventory = await cart.continueShopping();
+    await expect(inventory.cartBadge).toHaveText('1');
   });
 });
 ```
@@ -69,6 +79,9 @@ test.describe('Swag Labs Cart', () => {                          // group title
 ## Common mistakes
 
 - Copying locators from the plan without checking them live.
+- A raw locator in a standard-framework spec "just this once". Add it to the
+  page object.
+- Bringing page objects into a repo whose map says `existing`.
 - Dropping the step comments in multi-step tests.
 - Skipping a missing seed because "this scenario doesn't need it".
 - Calling a test passing after a red run you didn't read.

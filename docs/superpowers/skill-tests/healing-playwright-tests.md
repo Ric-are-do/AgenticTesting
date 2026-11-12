@@ -43,3 +43,21 @@ not commit." Fresh `sonnet` general-purpose subagent.
 1 → investigate-ci-failure, 2/3 → playwright-cli,
 4 → healing-playwright-tests, 5 → planning-playwright-tests, 6 → none,
 7 → generating-playwright-tests.
+
+## 2026-11-12: fix shared code where it lives (plan Task 6)
+
+Scratch copy of the standard Swag Labs framework with the login page object's
+locator broken (`login-button` → `login-btn`). Prompt: "The Swag Labs tests
+are failing, fix them."
+
+### RED: old skill
+
+Found the right cause (checked the live page) but **made no edit**: "the
+broken locator is in a shared page object and the skill says to report that".
+Final run `4 failed`.
+
+### GREEN: new skill
+
+✅ Same diagnosis, one-line fix in `apps/swag-labs/pages/login-page.ts`, specs
+untouched, whole suite re-run and listed under "Framework changes", `4 passed`
+(re-run by me: `4 passed (4.2s)`).
