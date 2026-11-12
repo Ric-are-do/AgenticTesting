@@ -8,3 +8,8 @@
   fixed. Always list it in the report. Never delete tests.
 - **Plan format:** follow `specs/swag-labs-critical-path.md`
   (`**Seed:**`, `**File:**`, `- expect:` lines).
+
+## Credential defaults in code (approved per app)
+- **Swag Labs** (2026-11-12): the user approved its public demo login as code
+  defaults in `apps/swag-labs/app.config.ts`. Any other app: env vars only
+  until the user approves it here.
