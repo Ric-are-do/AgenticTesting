@@ -6,9 +6,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "@framework/*": ["./framework/*"],
+      "@core/*": ["./core/*"],
       "@apps/*": ["./apps/*"]
     }
   },
-  "include": ["framework", "apps", "tests", "playwright.config.ts"]
+  "include": ["core", "apps", "tests", "playwright.config.ts"]
 }

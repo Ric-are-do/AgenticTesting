@@ -1,4 +1,4 @@
-# App knowledge base (`docs/apps/<app>/`)
+# App knowledge base (`apps/<app>/docs/`)
 
 What we know about each app, for people and agents: overview, journey map,
 business rules (the user's explanations), environments and where test accounts
@@ -22,7 +22,7 @@ file. A file without all five fields is not finished.
 ## Reading
 
 Don't open every file. Search the frontmatter first, for example `Grep` for
-`^description:` or `^area:` in `docs/apps/<app>/`, then open only the files
+`^description:` or `^area:` in `apps/<app>/docs/`, then open only the files
 that match what you need.
 
 ## Writing

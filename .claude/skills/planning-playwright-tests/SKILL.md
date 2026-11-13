@@ -23,13 +23,13 @@ open the app, stop and say so; don't write a plan from general knowledge.
    says where plans, seeds and tests go. No map and the user declined
    mapping → put them next to the existing plans and tests. No map otherwise
    → stop and ask whether to map the tests first.
-2. **Read what exists.** Search the frontmatter in `docs/apps/<app>/` first
+2. **Read what exists.** Search the frontmatter in `apps/<app>/docs/` first
    (e.g. `Grep` for `^description:`) and open only the files that match. No
    `journey-map.md` → run mapping-site-journeys first, **as its own complete
    step**: the whole site, under its read-only rules, finished and saved
    before you start planning. Read the plans in
-   `specs/<app>/` and list the tests. Don't plan what's already covered.
-3. **Find the seed** where the map says (standard: `tests/<app>/seed.spec.ts`).
+   `apps/<app>/specs/` and list the tests. Don't plan what's already covered.
+3. **Find the seed** where the map says (standard: `apps/<app>/tests/seed.spec.ts`).
    If none exists, name that path for the generator to create.
 4. **Explore live, only the area you're planning** (REQUIRED: playwright-cli),
    starting from the journey map. Walk every journey you'll plan, including
@@ -37,11 +37,11 @@ open the app, stop and say so; don't write a plan from general knowledge.
 5. **Design the scenarios:** happy paths, edge cases, and errors or
    validation. Each one starts from a fresh browser, is independent of the
    others, and is specific enough for any tester to follow.
-6. **Write the plan** to `specs/<app>/<area>.md` (or where the map says) in
+6. **Write the plan** to `apps/<app>/specs/<area>.md` (or where the map says) in
    the format below. `**File:**` paths follow the map (standard:
-   `tests/<app>/ui/`).
+   `apps/<app>/tests/ui/`).
 7. **Save what you learned** about the app (rules, quirks, exact behaviour)
-   to `docs/apps/<app>/<area>.md` with the five frontmatter fields (`app`,
+   to `apps/<app>/docs/<area>.md` with the five frontmatter fields (`app`,
    `area`, `title`, `description`, `updated`). Never a password.
 8. **Close the browser** (`playwright-cli close`).
 
@@ -81,9 +81,9 @@ open the app, stop and say so; don't write a plan from general knowledge.
 ## Common mistakes
 
 - Writing expected text from memory. The live text often differs.
-- Reading every doc in `docs/apps/` instead of scanning frontmatter.
+- Reading every doc in `apps/<app>/docs/` instead of scanning frontmatter.
 - Learning how the app behaves and keeping it only in the plan.
-- Skipping the existing `specs/`, and duplicating a scenario.
+- Skipping the existing plans in `apps/<app>/specs/` (or legacy `specs/`), and duplicating a scenario.
 - Steps that depend on an earlier scenario's state.
 - Inventing your own plan layout. The generator relies on `**Seed:**`,
   `**File:**` and `- expect:`.

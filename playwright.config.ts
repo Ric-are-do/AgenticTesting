@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
-import { loadDotEnv } from './framework/helpers/env';
-import { appProject } from './framework/config/app-project';
+import { appProject, loadDotEnv } from './core/app';
 import { apps } from './apps';
 
 /* Load .env if present (a missing file is fine: CI has none). */
@@ -11,7 +10,6 @@ loadDotEnv();
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -32,13 +30,13 @@ export default defineConfig({
   },
 
   projects: [
-    /* Legacy tests (not moved to the framework yet): everything under tests/ except the app folders. */
+    /* Legacy tests (not moved into an app folder yet): everything under tests/. */
     {
       name: 'chromium',
+      testDir: './tests',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: apps.map((app) => `**/${app.name}/**`),
     },
-    /* One project per app in apps/index.ts (testDir tests/<app>, its own baseURL). */
+    /* One project per app in apps/index.ts (testDir apps/<app>/tests, its own baseURL). */
     ...apps.map(appProject),
   ],
 });

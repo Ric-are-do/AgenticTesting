@@ -1,6 +1,6 @@
 # Journey map and observations templates
 
-## `docs/apps/<app>/journey-map.md`
+## `apps/<app>/docs/journey-map.md`
 
 ````markdown
 ---
@@ -51,7 +51,7 @@ Page                     route              type     notes
 |------|-------|-----------|
 ````
 
-## `docs/apps/<app>/observations.md`
+## `apps/<app>/docs/observations.md`
 
 ````markdown
 ---

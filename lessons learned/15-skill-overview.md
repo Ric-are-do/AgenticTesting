@@ -26,7 +26,7 @@ For the details, see [11-qa-tester-super-agent.md](11-qa-tester-super-agent.md)
 ### Set up and learn
 
 **`building-playwright-framework`**: sets up a new Playwright framework:
-a shared `framework/`, one `apps/<app>/` per app, page objects and fixtures.
+one folder `apps/<app>/` that holds everything about an app (pages, fixtures, tests, plans, docs), on a small shared `core/`.
 Specs never use raw locators. Saves a `framework-map.md` in the agent's
 memory.
 
@@ -35,13 +35,13 @@ organised and writes it down as `framework-map.md`. It saves only after you
 confirm, and every later task follows that map.
 
 **`mapping-site-journeys`**: explores a new site and writes
-`docs/apps/<app>/journey-map.md`: which pages exist, how they connect, and
+`apps/<app>/docs/journey-map.md`: which pages exist, how they connect, and
 where you leave for another app. Read-only: it looks at everything and
 changes nothing.
 
 ### Write and fix tests
 
-**`planning-playwright-tests`**: writes a test plan to `specs/<app>/<area>.md`.
+**`planning-playwright-tests`**: writes a test plan to `apps/<app>/specs/<area>.md`.
 Every step comes from the live app, never from memory. It maps the site
 first if there's no journey map.
 
@@ -80,7 +80,7 @@ flowchart LR
 
 - **Map first:** planning, generating and healing all read `framework-map.md`
   before doing anything.
-- **Plan first:** generating won't write a test without a plan in `specs/`.
+- **Plan first:** generating won't write a test without a plan in `apps/<app>/specs/`.
 - **One browser tool:** every skill that needs a browser uses `playwright-cli`,
   not MCP. See [02-cli-vs-mcp.md](02-cli-vs-mcp.md).
 - **Local or CI?** Local failures go to healing. CI failures go to the

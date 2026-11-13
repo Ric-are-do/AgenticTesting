@@ -41,7 +41,7 @@ Read `test-results/results.json` and `failed.log` (either may be missing). Older
 For each one, in order:
 
 1. Look in the test's folder under `test-results/` for `error-context.md` (Playwright writes it on every failure; `results.json` lists it as the `error-context` attachment). Read it first: it has the error and a text snapshot of the page at the moment the test failed. Use that snapshot as the main evidence of what the page showed. If it is missing, say so in `## Evidence` for that test and use the screenshot (`.png`) and trace instead.
-2. Read the test source under `tests/`. If a head SHA is known and differs from `git rev-parse HEAD`, read the file as it was in that commit: `git show <head sha>:<path>`. If it does not exist, say so.
+2. Read the test source (`apps/<app>/tests/`, or `tests/` for legacy tests; the framework map says which). If a head SHA is known and differs from `git rev-parse HEAD`, read the file as it was in that commit: `git show <head sha>:<path>`. If it does not exist, say so.
 3. Find the site URL in the test or in `playwright.config.ts`. Never assume a site.
 4. Use the `playwright-cli` skill, headless, to open that URL and walk to the failing step. Compare what you see with the snapshot or screenshot and with what the test expects. When `error-context.md` already explains the failure, keep this check short.
    - If the user says to treat the site as unreachable, do not open it.

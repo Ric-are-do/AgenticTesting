@@ -1,4 +1,3 @@
-import type { AppConfig } from '@framework/app-config';
-import { qaPractice } from './qa-practice/app.config';
+import type { AppConfig } from '@core/app';
 
-export const apps: AppConfig[] = [qaPractice];
+export const apps: AppConfig[] = [];

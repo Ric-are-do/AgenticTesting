@@ -1,6 +1,6 @@
 ---
 name: generating-playwright-tests
-description: Use when turning a test plan, scenario or list of steps into Playwright test code, such as "write the test for scenario 1.3", "automate this test case" or "generate tests from specs/<plan>.md", including when the plan's seed file does not exist yet.
+description: Use when turning a test plan, scenario or list of steps into Playwright test code, such as "write the test for scenario 1.3", "automate this test case" or "generate tests from apps/<app>/specs/<plan>.md", including when the plan's seed file does not exist yet.
 ---
 
 # Generating Playwright tests
@@ -13,16 +13,16 @@ before you write it**, then run the file and read the result honestly.
 
 ## When to use
 
-- A scenario in a plan in `specs/` needs turning into `.spec.ts`.
+- A scenario in a plan (`apps/<app>/specs/`, or `specs/` for legacy tests) needs turning into `.spec.ts`.
 - Not for deciding what to test (use planning-playwright-tests) or fixing
   existing failing tests (use healing-playwright-tests).
 
 ## Process
 
 0. **Plan first (REQUIRED: planning-playwright-tests).** Every test comes
-   from a scenario in a plan in `specs/`. No plan has this scenario, even
+   from a scenario in a plan. No plan has this scenario, even
    when the user gave the steps themselves? Load planning-playwright-tests,
-   pass it the user's steps, let it write the scenario to `specs/`, then
+   pass it the user's steps, let it write the scenario to the plan, then
    come back here.
 1. **Read the framework map** (`framework-map.md` in the agent's memory) and
    follow its decision and rules. No map and the user declined mapping for
@@ -61,8 +61,8 @@ before you write it**, then run the file and read the result honestly.
 Standard framework (an `existing` map keeps its own style, same comments):
 
 ```ts
-// spec: specs/swag-labs/cart.md
-// seed: tests/swag-labs/seed.spec.ts
+// spec: apps/swag-labs/specs/cart.md
+// seed: apps/swag-labs/tests/seed.spec.ts
 
 import { test, expect } from '@apps/swag-labs/fixtures';
 
