@@ -4,7 +4,7 @@ Open this first when we start working again.
 
 ## Next up
 
-1. [ ] **Test the overall flow end to end,** and understand the YAML files and
+1. [x] **Test the overall flow end to end,** and understand the YAML files and
    the flow logic better. *(Reminder to myself.)*
    - Start with the diagrams in `lessons learned/08-ci-investigator.md`.
    - The files: `.github/workflows/playwright.yml`, `claude.yml` and
