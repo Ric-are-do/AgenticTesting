@@ -48,20 +48,26 @@ the topic file with the detail. Only the index is loaded automatically, so
 keeping it short keeps every call cheap. The agent opens a topic file only
 when the index says it's relevant.
 
+Current layout (since 2026-11-13; before that, all app notes sat in one
+shared `app-knowledge.md`):
+
 ```
 .claude/agent-memory/qa-tester/
   MEMORY.md             index, loaded at every start
-  app-knowledge.md      pages, real locators, quirks, bugs found
+  framework-map.md      how this repo's tests are organised
   failure-patterns.md   failures and flaky tests, and their real cause
   environment.md        machine, repo and tool gotchas
   ci.md                 patterns from CI investigations
-  decisions.md          what you decided or prefer, and why
+  decisions.md          your general rules and preferences, and why
+  apps/
+    <app>/memory.md     one app's rules, approvals, quirks and bugs
 ```
 
-An index line looks like this:
+Index lines look like this:
 
 ```
-- Swag Labs login button is `[data-test=login-button]`; `#login-btn` does not exist → app-knowledge.md
+- swag-labs → apps/swag-labs/memory.md: credential defaults approved; login button, empty-cart checkout bug
+- Don't run several `npx playwright test` at once in one folder → environment.md
 ```
 
 ## Telling the agent when to use it
@@ -107,8 +113,17 @@ The ways to handle it:
 | **Separate repos** | Each repo has its own `.claude/agent-memory/qa-tester/` | The apps are truly separate projects |
 | **`user` scope** | One memory across all your projects | Your general preferences, not app locators |
 
-The skills and the agent don't change in any of these. Only the memory layout
-does.
+> **Changed 2026-11-13:** we did the first option. General notes stay at the
+> top of `.claude/agent-memory/qa-tester/`; each app has a subfolder,
+> `apps/<app>/memory.md` (rules and approvals, quirks and possible bugs,
+> pointers to its docs). `app-knowledge.md` is gone. `MEMORY.md` has an
+> "Apps" section with one line per app and the rule "read the app's memory
+> before working on it". An app's memory is deleted only when you ask:
+> removing its code keeps its rules (e.g. qa-practice's contact-form limit).
+> The agent file and two skills changed too, to point at the new paths.
+
+Before that change we expected only the memory layout to move; in the end the
+agent file and the skills that name memory files had to follow.
 
 ## Memory vs the other places knowledge lives
 
@@ -133,4 +148,4 @@ anything it *must* obey belongs in `CLAUDE.md` or rules, not in memory.
   while building (the login locator, the empty-cart checkout bug, the
   parallel-run clash, your git rule), not with guesses.
 - **Still to test:** two calls in a row: one that should save a note, then
-  one that should use it. (TODO item 5.)
+  one that should use it. (TODO item 2.)

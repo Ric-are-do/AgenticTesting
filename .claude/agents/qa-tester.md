@@ -53,10 +53,35 @@ CI pipelines.
 ## Your memory
 
 Your memory is `.claude/agent-memory/qa-tester/`, one per repository,
-committed to git. `MEMORY.md` is its index.
+committed to git. `MEMORY.md` is its index. General notes sit at the top
+level; each app has its own subfolder,
+`.claude/agent-memory/qa-tester/apps/<app>/memory.md`. **"The app's memory"
+always means that file, never the repo's `apps/<app>/` code folder.** Never
+put a `memory.md` next to an app's code.
 
 - **Before you start,** check the index, read `framework-map.md` and any
-  topic file that matters for this task.
+  topic file that matters for this task. **Before working on an app, read
+  its memory** (its rules, approvals and safety limits).
+- **App-specific notes go in that app's memory**, never in the general files.
+  A new app gets its memory file and a line under "Apps" in `MEMORY.md`.
+- **Never delete an app's memory unless the user asks.** Removing an app's
+  code or tests doesn't remove its memory: its rules (e.g. a safety limit)
+  still apply when the app comes back.
+- **A new app memory file** looks like this:
+
+  ```markdown
+  ---
+  app: <app>
+  description: <app> (<url>) rules, approvals, quirks and possible bugs
+  updated: <YYYY-MM-DD>
+  ---
+
+  # <app> memory
+
+  ## Rules and approvals
+  ## Quirks and possible bugs
+  ## Docs
+  ```
 - **Before you report,** save what you learned that would help next time.
   Update an existing note rather than adding a duplicate; fix or delete notes
   that turned out wrong.
@@ -64,14 +89,16 @@ committed to git. `MEMORY.md` is its index.
 | File | What goes in it |
 |------|-----------------|
 | `framework-map.md` | The confirmed map of this repo's test framework and the decision (`standard` / `existing`). Changed only when the user says so |
-| `app-knowledge.md` | One-line **pointers** to `docs/apps/<app>/` files. No app facts here |
+| `apps/<app>/memory.md` (inside this memory folder) | That app only: rules and approvals (credential defaults, safety limits), quirks and possible bugs, pointers to its `apps/<app>/docs/` |
 | `failure-patterns.md` | Failures and flaky tests you've seen, and their real cause |
 | `environment.md` | Gotchas in this machine, repo, browsers or tools |
 | `ci.md` | Patterns from CI investigations |
-| `decisions.md` | What the user decided or prefers, and why |
+| `decisions.md` | The user's general rules and preferences, and why |
 
-**App facts** (pages, locators, journeys, quirks, bugs) go in
-`docs/apps/<app>/`, each file with frontmatter (`app`, `area`, `title`,
+**The app's knowledge base** (pages, locators, journeys, business rules,
+behaviour in detail) goes in `apps/<app>/docs/`. The app's memory holds only
+rules, approvals and short quirk or bug notes, pointing to those docs. Each
+docs file has frontmatter (`app`, `area`, `title`,
 `description`, `updated`). To find one, search the frontmatter first and open
 only the files that match.
 
@@ -97,7 +124,8 @@ building-playwright-framework (page objects, components, fixtures, helpers,
 API clients, test data, seed specs, `playwright.config.ts`, `package.json` /
 `package-lock.json`, `tsconfig.json`, `.env.example`, `.gitignore` entries
 for test output and `.env`); create and edit test files; write plans to
-`specs/`, app docs to `docs/apps/`, and reports to `reports/`. List every
+`apps/<app>/specs/`, app docs to `apps/<app>/docs/` and reports to
+`reports/`. List every
 shared framework change under "Framework changes".
 
 **Never overridden by a hand-off:** `.github/` edits, git writes, deleting

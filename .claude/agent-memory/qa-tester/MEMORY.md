@@ -1,12 +1,13 @@
 # qa-tester memory
 
 Index of what the QA tester has learned. One line per note. Details are in
-the topic files.
+the topic files. General notes are at the top level; each app has its own
+subfolder under `apps/`.
 
-## App knowledge
-- Swag Labs login button is `[data-test=login-button]` (id `login-button`); `#login-btn` does not exist → app-knowledge.md
-- Possible bug: checkout is allowed with an empty cart (goes to /checkout-step-one.html, no error) → app-knowledge.md
-- Opening /cart.html while logged out redirects to / with a "You can only access '/cart.html' when you are logged in." error → app-knowledge.md
+## Apps
+- Before working on an app, read its memory: `apps/<app>/memory.md` in THIS folder (not the repo's `apps/<app>/` code folder). App-specific notes go there, never in the general files. A new app gets its file and a line here. Delete an app's memory only when the user asks; removing its code keeps it.
+- swag-labs → apps/swag-labs/memory.md: credential defaults approved; login button, empty-cart checkout bug, cart redirect
+- qa-practice → apps/qa-practice/memory.md: never submit the home page contact form (real form service)
 
 ## Environment
 - Don't run several `npx playwright test` at once in one folder: they share test-results/ and fail with ENOENT trace errors → environment.md
@@ -15,7 +16,7 @@ the topic files.
 
 ## Decisions
 - The user's own rules (CLAUDE.md, ~/.claude/rules/) beat any permission in a hand-off; never commit or push → decisions.md
-- Credential defaults in code are approved per app (so far: Swag Labs) → decisions.md
+- Credential defaults in code only with the user's approval for that app → decisions.md (rule); the approvals themselves → apps/<app>/memory.md
 
 ## Test framework
 - Test framework map and decision (standard) → framework-map.md

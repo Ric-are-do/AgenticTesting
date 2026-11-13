@@ -7,9 +7,10 @@ description: Use when a repo has no test automation yet and Playwright tests are
 
 ## Overview
 
-Every app gets the same architecture: a shared, app-agnostic `framework/`,
-one `apps/<app>/` per app, page objects that keep **locators and the methods
-that use them in one file**, and fixtures that load every prerequisite lazily.
+Every app gets the same architecture: **one folder `apps/<app>/` holds
+everything about that app** (page objects, fixtures, tests, plans, docs), on
+top of a small shared `core/`. Page objects keep **locators and the methods
+that use them in one file**, and fixtures load prerequisites lazily.
 A spec states behaviour and checks it; it never touches a raw locator.
 
 ## When to use
@@ -24,26 +25,32 @@ A spec states behaviour and checks it; it never touches a raw locator.
 
 ## Process
 
-1. **Shared part, once:** if `framework/` is missing, create it as in
-   `architecture.md` and `fixtures-and-config.md` (base page, base fixtures
-   with lazy per-worker login, base API client, env helper, app list,
-   per-app projects in `playwright.config.ts`, `dotenv`, `tsconfig.json`
-   aliases, `.env` and `playwright/.auth/` in `.gitignore`).
-2. **The app:** `apps/<app>/` (`app.config.ts`, `pages/`, `components/`,
-   `api/`, `data/`, `fixtures.ts`), one line in the app list,
-   `tests/<app>/ui/`, `tests/<app>/api/`, `tests/<app>/seed.spec.ts`,
-   `specs/<app>/`.
+1. **Shared core, once:** if `core/` is missing, create it as in
+   `architecture.md` and `fixtures-and-config.md`: `core/app.ts`,
+   `core/fixtures.ts`, `core/pages/base-page.ts`, the app list, per-app
+   projects in `playwright.config.ts`, `dotenv`, `tsconfig.json` aliases,
+   `.env` and `playwright/.auth/` in `.gitignore`. Nothing more until an app
+   needs it.
+2. **The app:** one folder `apps/<app>/` with `app.config.ts`, `fixtures.ts`,
+   `pages/`, `components/`, `tests/seed.spec.ts`, `tests/ui/`, `specs/`,
+   `docs/`, and one line in the app list. A login adds
+   `tests/auth.setup.ts` (Playwright setup project); API tests add `api/`
+   and `tests/api/`. No empty placeholder folders. Also create the app's
+   memory, `.claude/agent-memory/qa-tester/apps/<app>/memory.md` (format in
+   the agent file), and its line under "Apps" in that folder's `MEMORY.md`.
 3. **Walk the pages live** (REQUIRED: playwright-cli) before writing a page
    object. Use the locators you saw.
 4. **Credentials:** env vars only. Defaults in `app.config.ts` **only when the
-   user approved it for this app**: check the agent's `decisions.md`, or the
-   hand-off; record a new approval in `decisions.md`. Otherwise ask (as a
+   user approved it for this app**: check the app's memory
+   (`.claude/agent-memory/qa-tester/apps/<app>/memory.md`, not the code
+   folder), or the hand-off; record a new approval there.
+   Otherwise ask (as a
    subagent: stop and report the question). Never write a secret anywhere
    else. The base URL is not a secret: give it a default.
-5. **Docs:** `docs/apps/<app>/` as in `knowledge-base.md`.
+5. **Docs:** `apps/<app>/docs/` as in `knowledge-base.md`.
 6. **Prove it:** run the app's project. Then prove the skip: run once with a
    needed variable that has no default set empty (or, if every value has a
-   default, temporarily point `baseUrlVar`/a user var at an unset name with no
+   default, temporarily point `baseUrlVar` (or a credential var) at an unset name with no
    default) and check the JSON report's skip reason names the variable. Undo
    the temporary change.
 7. **Save the map:** write `framework-map.md` in the agent's memory folder
@@ -80,7 +87,7 @@ export class InventoryPage extends BasePage {
   }
 }
 
-// tests/swag-labs/ui/cart.spec.ts
+// apps/swag-labs/tests/ui/cart.spec.ts
 import { test, expect } from '@apps/swag-labs/fixtures';
 
 test('adding an item shows it in the cart', async ({ inventoryPage }) => {
@@ -93,8 +100,12 @@ test('adding an item shows it in the cart', async ({ inventoryPage }) => {
 
 ## Common mistakes
 
-- One-app layout (`pages/` at the root). Always `framework/` + `apps/<app>/`.
+- One-app layout (`pages/` at the root), or one app spread over several
+  top-level folders. Everything for an app goes in `apps/<app>/`.
+- Building shared code (a login fixture, an API client) before any app
+  needs it.
 - Navigating in the spec (`cartLink.click()`). Pages return the next page.
-- Logging in through the UI in every test. Log in once per worker per user.
+- Logging in through the UI in every test. Use a setup project and reuse the
+  saved state.
 - Credentials in a constant "because they're public". Only with approval.
 - Skipping the docs or the map because "the tests pass".

@@ -14,5 +14,5 @@
 - **The HTML reporter** can keep a run open after a failure (it serves the
   report). `PLAYWRIGHT_HTML_OPEN=never` stops that without changing what is
   tested.
-- **The repo is under OneDrive** (`C:\Users\ricar\OneDrive\...`), and paths
-  contain spaces (`tests/swag Lab tests/`). Quote paths.
+- **Paths contain spaces** (`tests/swag Lab tests/`, `lessons learned/`).
+  Quote paths.

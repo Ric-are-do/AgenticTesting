@@ -1,6 +1,6 @@
 ---
 name: mapping-site-journeys
-description: Use when a website or web app is being looked at for the first time and there is no journey map for it in docs/apps/<app>/, such as "investigate this site", "we've never looked at this app before", "explore the site so we can plan tests", or when the user asks to map or re-map how a site's pages connect.
+description: Use when a website or web app is being looked at for the first time and there is no journey map for it in apps/<app>/docs/, such as "investigate this site", "we've never looked at this app before", "explore the site so we can plan tests", or when the user asks to map or re-map how a site's pages connect.
 ---
 
 # Mapping a site's journeys
@@ -14,7 +14,7 @@ from it. **Look at everything, change nothing.**
 
 ## When to use
 
-- No `docs/apps/<app>/journey-map.md` exists for the site. No permission
+- No `apps/<app>/docs/journey-map.md` exists for the site. No permission
   needed.
 - The user asks to map or re-map it, or you notice the site changed (a route
   gone, a new menu item): say so first, then update the map.
@@ -44,16 +44,18 @@ from it. **Look at everything, change nothing.**
 ## Process
 
 1. **Name the app** (`<app>`, kebab-case): the name the repo already uses
-   (`apps/`, `docs/apps/`, the framework map) if any; otherwise the product's
+   (`apps/`, the framework map) if any; otherwise the product's
    own name as the site or the user calls it (page title "Swag Labs" →
-   `swag-labs`), not the domain. Check `docs/apps/<app>/` frontmatter for an
+   `swag-labs`), not the domain. Check `apps/<app>/docs/` frontmatter for an
    existing map.
 2. Explore with playwright-cli (REQUIRED), page by page: route, title or
    heading, one-line purpose, page type (list, form, search, detail, tool,
    dashboard), the controls that lead elsewhere, counts (records, tabs).
-3. Write `docs/apps/<app>/journey-map.md` and `observations.md` from
+3. Write `apps/<app>/docs/journey-map.md` and `observations.md` from
    `map-template.md`, both with the five frontmatter fields.
-4. Add one pointer line to the agent's memory (`app-knowledge.md`).
+4. Add a pointer to both files under `## Docs` in the app's memory,
+   `apps/<app>/memory.md` in the agent's memory folder (create the file and
+   its line in `MEMORY.md` if missing).
 5. Close the browser.
 
 ## Common mistakes

@@ -37,9 +37,11 @@ request matches. So the description does all the work. The agent has no
 `skills:` list, so a new skill needs no change to the agent.
 
 The agent also has a **memory** in `.claude/agent-memory/qa-tester/`,
-committed to git. It holds the confirmed map of the test framework, failure
-patterns, CI patterns and decisions. It reads the memory before each task and
-updates it afterwards.
+committed to git. The top level holds what applies to all work: the
+confirmed map of the test framework, failure patterns, CI patterns and your
+general decisions. Each app has its own subfolder, `apps/<app>/memory.md`,
+with that app's rules, approvals and quirks. It reads the memory before each
+task and updates it afterwards.
 
 ## The skills
 
@@ -55,7 +57,7 @@ updates it afterwards.
 | Click around a page, screenshot, find a locator | `playwright-cli` |
 
 The rules they follow: **map first** (know the framework before touching
-tests), **plan first** (no test without a plan in `specs/`), and **one
+tests), **plan first** (no test without a plan in `apps/<app>/specs/`), and **one
 browser tool** (`playwright-cli`, not MCP, because it costs fewer tokens).
 
 ## Using it
@@ -96,8 +98,10 @@ investigation runs on your machine and on CI.
 | `.claude/agents/qa-tester.md` | The agent |
 | `.claude/skills/` | The skills |
 | `.claude/agent-memory/qa-tester/` | The agent's memory |
-| `tests/` | Playwright tests |
-| `specs/` | Test plans |
+| `apps/<app>/` | Everything about one app under test: page objects, components, fixtures, `tests/`, `specs/` (plans) and `docs/` (knowledge base) |
+| `core/` | The small shared part every app uses: app config and projects, base fixtures, `BasePage` |
+| `tests/` | Legacy tests not moved into an app folder yet (Swag Labs, example) |
+| `specs/` | Legacy test plans (new plans live in `apps/<app>/specs/`) |
 | `.github/workflows/` | CI and Claude workflows |
 | `docs/superpowers/` | Design specs, implementation plans and skill test logs |
 | `lessons learned/` | What we learned building all this |

@@ -58,9 +58,9 @@ agent whenever you add a skill.
 
 | Skill | Use it when | What it produces |
 |-------|-------------|------------------|
-| `planning-playwright-tests` | You want a test plan or test cases for a page or flow | A plan in `specs/<area>.md`, built from the **live** site |
+| `planning-playwright-tests` | You want a test plan or test cases for a page or flow | A plan in `apps/<app>/specs/<area>.md` (legacy: `specs/`), built from the **live** site |
 | `generating-playwright-tests` | You want a plan scenario turned into test code | One `.spec.ts` per scenario, checked live, run once honestly |
-| `healing-playwright-tests` | Tests fail, time out or are flaky **locally** | Fixes in test files only. Shared-code fixes are proposed, not made |
+| `healing-playwright-tests` | Tests fail, time out or are flaky **locally** | Fixes where the cause lives (test, page object, fixture or config); see the note under the test results below |
 | `investigate-ci-failure` | Tests failed in **GitHub Actions / CI** | A markdown report explaining why. It never changes code |
 | `playwright-cli` | Something needs a live browser (open, click, snapshot, find a locator) | The browser tool the other skills use |
 
@@ -74,9 +74,9 @@ flowchart TD
     tester -->|"CI is red"| ci[investigate-ci-failure]
     tester -->|"no skill fits"| none[Says so in the report<br/>and stops]
 
-    plan -->|writes| specs[(specs/&lt;area&gt;.md<br/>Seed + File + expect lines)]
+    plan -->|writes| specs[(apps/&lt;app&gt;/specs/&lt;area&gt;.md<br/>Seed + File + expect lines)]
     specs --> gen
-    gen -->|writes| tests[(tests/**/*.spec.ts)]
+    gen -->|writes| tests[(apps/&lt;app&gt;/tests/**/*.spec.ts)]
     tests -->|run npx playwright test| result{Pass?}
     result -->|no, local| heal
     heal -->|fixes test files| tests
@@ -99,7 +99,7 @@ How to read it:
   tests from the plan, then run them. Local failures go to healing; CI
   failures go to the investigator.
 - **Planning always comes first.** The generator's step 0 requires the
-  scenario to be in a plan in `specs/`. If it isn't, even when you gave the
+  scenario to be in a plan (`apps/<app>/specs/`). If it isn't, even when you gave the
   steps yourself, it loads the planner first and then writes the test from
   that plan. The plan file is the hand-off between them. (The framework
   skills added more links, such as generating following the framework map;
@@ -117,7 +117,9 @@ The tester **stops and reports** instead of doing any of these:
 - **CI files:** editing anything under `.github/`.
 - **Tests:** deleting a test. `test.fixme()` is allowed, and it gets listed
   in the report.
-- **Framework:** changing `playwright.config.ts`, `package.json`, `.mcp.json`,
+- **Framework** *(changed 2026-11-12: the tester now builds and changes the
+  framework, see lesson 14; only `.mcp.json` and `.claude/` outside its memory
+  stay off limits. Original rule:)* changing `playwright.config.ts`, `package.json`, `.mcp.json`,
   anything in `.claude/`, shared helpers, fixtures or page objects, or an
   existing seed file.
 
@@ -154,11 +156,11 @@ How it works:
 
 | Topic file | What goes in it |
 |------------|-----------------|
-| `app-knowledge.md` | Real locators, page quirks, bugs found |
+| `apps/<app>/memory.md` | One app's rules, approvals, quirks and bugs (a shared `app-knowledge.md` until 2026-11-13, see lesson 12) |
 | `failure-patterns.md` | Failures and flaky tests, and their real cause |
 | `environment.md` | Machine, repo and tool gotchas |
 | `ci.md` | Patterns from CI investigations |
-| `decisions.md` | What you decided or prefer, and why |
+| `decisions.md` | Your general rules and preferences, and why |
 
 We seeded it with facts confirmed while building: the login locator, the
 empty-cart checkout bug, the parallel-run clash, and your git rule.

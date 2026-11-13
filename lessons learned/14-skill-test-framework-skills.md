@@ -17,11 +17,11 @@ Built on the `test-framework-architecture` branch, 2026-11-12. Design:
 | `.claude/skills/building-playwright-framework/` | **New.** Our standard architecture (page objects, fixtures, per-app projects, env and secrets rules, docs) and how to set it up on a project with no automation. |
 | `.claude/skills/mapping-existing-framework/` | **New.** Learns how an existing repo's tests are organised, writes a map with a diagram and rules, and saves it only after you confirm. |
 | `.claude/skills/mapping-site-journeys/` | **New.** Maps a website the first time it's investigated: pages, routes, how they connect, exits to other apps. Read-only. |
-| `.claude/skills/planning-playwright-tests/` | Updated: reads the framework map and docs frontmatter first, uses the journey map, saves what it learns to `docs/apps/<app>/`. |
+| `.claude/skills/planning-playwright-tests/` | Updated: reads the framework map and docs frontmatter first, uses the journey map, saves what it learns to `apps/<app>/docs/`. |
 | `.claude/skills/generating-playwright-tests/` | Updated: follows the map; in the standard framework, page objects and fixtures only. |
 | `.claude/skills/healing-playwright-tests/` | Updated: fixes a broken locator where it lives (the page object) and re-runs every spec that uses it. |
 | `.claude/agent-memory/qa-tester/framework-map.md` | **Per repo.** The confirmed map of the test framework, with the decision `standard` or `existing` at the top. |
-| `docs/apps/<app>/` | **Per app.** The knowledge base: journey map, observations, business rules. Every file has frontmatter. |
+| `apps/<app>/docs/` | **Per app.** The knowledge base: journey map, observations, business rules. Every file has frontmatter. |
 
 The key idea: **the map is the first thing the agent reads, and it drives
 every decision.** No map means the agent either builds one (empty repo) or
@@ -63,8 +63,8 @@ flowchart TD
 ```mermaid
 flowchart LR
     new["New site"] --> site[mapping-site-journeys<br/>journey-map.md<br/>observations.md]
-    site --> plan[planning-playwright-tests<br/>specs/app/area.md<br/>docs/apps/app/area.md]
-    plan --> gen[generating-playwright-tests<br/>tests/app/ui/*.spec.ts<br/>+ page object methods]
+    site --> plan[planning-playwright-tests<br/>apps/app/specs/area.md<br/>apps/app/docs/area.md]
+    plan --> gen[generating-playwright-tests<br/>apps/app/tests/ui/*.spec.ts<br/>+ page object methods]
     gen --> heal[healing-playwright-tests<br/>fix in the page object<br/>re-run every user]
 ```
 
@@ -74,19 +74,23 @@ where everything else is.
 
 ## Inside the build skill: the standard architecture
 
+> **Changed 2026-11-13** after building the first real app (qa-practice):
+> each app now holds everything in one folder, and the shared `framework/`
+> became a small `core/`. The first version shared a custom login fixture
+> and an API client that no app used yet. See item 12 under "Lessons learned" below.
+
 ```
-framework/                     shared, knows no app
+core/                          shared, knows no app (79 lines)
+  app.ts                       AppConfig, loadDotEnv(), resolveBaseUrl(), appProject()
+  fixtures.ts                  base `test`: app option + skip-if-missing
   pages/base-page.ts           BasePage: goto(), waitUntilLoaded()
-  fixtures/base.ts             app, user, lazy per-worker login, skip-if-missing
-  api/base-client.ts           BaseApiClient
-  helpers/env.ts, app-config.ts, config/app-project.ts
 apps/index.ts                  list of apps -> one Playwright project each
-apps/<app>/
-  app.config.ts                name, base URL, users and their env vars
-  pages/ components/ api/ data/ fixtures.ts
-tests/<app>/ui/  tests/<app>/api/  tests/<app>/seed.spec.ts
-specs/<app>/                   test plans
-docs/apps/<app>/               knowledge base
+apps/<app>/                    EVERYTHING about one app
+  app.config.ts  fixtures.ts  pages/  components/
+  tests/seed.spec.ts  tests/ui/   (tests/auth.setup.ts if it has a login)
+  specs/                       test plans
+  docs/                        knowledge base
+tests/                         legacy tests not moved yet
 ```
 
 The rules, briefly:
@@ -94,17 +98,17 @@ The rules, briefly:
 - **Page objects keep locators and the methods that use them in one file.**
   Locators are `readonly` properties set in the constructor. A method that
   navigates returns the next page object.
-- **Specs never touch a raw locator** and never `new XPage(page)`. Pages and
-  clients come from fixtures. Assertions live in specs.
-- **Login runs once per worker per user,** saved to
-  `playwright/.auth/<app>-<user>-<worker>.json`. Login-page tests opt out with
-  `loggedIn: false`. API-only tests never trigger a login.
-- **Several named users per app,** switched with `test.use({ user: 'admin' })`.
+- **Specs never touch a raw locator** and never `new XPage(page)`. Pages come
+  from fixtures. Assertions live in specs.
+- **Keep `core/` small.** Add to it only when a second app needs the same
+  thing. No empty `api/` or `data/` placeholders.
+- **Logins use Playwright's setup project:** `apps/<app>/tests/auth.setup.ts`
+  logs in once and saves `playwright/.auth/<app>.json`; tests reuse it.
 - **Missing env vars skip, loudly:** `skipped: SWAG_LABS_URL not set`. The run
   never fails for it.
 - **Credentials in code only with your approval for that app.** Approvals are
-  recorded per repo in the agent's `decisions.md` (Swag Labs so far), not in
-  the skill. A URL isn't a secret, so it gets a default.
+  recorded per app in the agent's memory, `apps/<app>/memory.md` (Swag Labs
+  so far; it was `decisions.md` until 2026-11-13), not in the skill. A URL isn't a secret, so it gets a default.
 
 ## Inside the mapping skills
 
@@ -127,12 +131,12 @@ it was asked about.
 |---|---|---|
 | How the tests are organised + the decision | `.claude/agent-memory/qa-tester/framework-map.md` | every skill, first |
 | Agent's own working lessons | the other memory files | the agent |
-| How the site fits together | `docs/apps/<app>/journey-map.md` | you, planning |
-| Bugs and quirks seen | `docs/apps/<app>/observations.md` | you, planning |
-| Business rules, behaviour learned while planning | `docs/apps/<app>/<area>.md` | planning, generating |
-| Test plans | `specs/<app>/<area>.md` | generating |
+| How the site fits together | `apps/<app>/docs/journey-map.md` | you, planning |
+| Bugs and quirks seen | `apps/<app>/docs/observations.md` | you, planning |
+| Business rules, behaviour learned while planning | `apps/<app>/docs/<area>.md` | planning, generating |
+| Test plans | `apps/<app>/specs/<area>.md` | generating |
 
-Every `docs/apps/` file starts with `app`, `area`, `title`, `description`,
+Every `apps/<app>/docs/` file starts with `app`, `area`, `title`, `description`,
 `updated`. Agents grep the frontmatter and open only matching files. Memory
 holds one-line pointers to the docs, never copies.
 
@@ -196,6 +200,14 @@ answer in the hand-off.
     Four of the final review's findings didn't reproduce: the agent did the
     right thing anyway. We still fixed the wording (a later model may read it
     literally) but logged them as "not reproduced", not as proven bugs.
+12. **Don't build the shared layer ahead of need.** The first `framework/`
+    had a custom login-once-per-worker fixture, several users per app and an
+    API client. The first real app (qa-practice) had no login and no API, so
+    looking at the folder showed mostly unused code. Shrinking it to a 79-line
+    `core/` and putting each app's tests, plans and docs inside `apps/<app>/`
+    made the layout obvious: one folder per app. Where Playwright already has
+    a standard way (setup projects for login), use it rather than build our
+    own.
 
 ## Known gaps
 
@@ -212,8 +224,9 @@ answer in the hand-off.
 - **The "Legacy tests" and `playwright/.auth/` rules** weren't re-run after the
   wording fix; the earlier run already behaved that way.
 - **[12-agent-memory.md](12-agent-memory.md) still describes
-  `app-knowledge.md` as holding app facts.** It now holds pointers to
-  `docs/apps/` only.
+  `app-knowledge.md` as holding app facts.** *(Changed 2026-11-13:
+  `app-knowledge.md` is gone; each app has `apps/<app>/memory.md` in the
+  agent's memory. Lesson 12 has a note.)*
 
 ## What was tested
 

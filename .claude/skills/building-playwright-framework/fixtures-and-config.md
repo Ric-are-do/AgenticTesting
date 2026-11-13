@@ -1,67 +1,88 @@
-# Fixtures, login, API layer, config and secrets
+# Core, fixtures, login, config and secrets
+
+## The core stays small
+
+`core/` holds only what every app needs today: `app.ts`, `fixtures.ts`,
+`pages/base-page.ts` (well under 100 lines in total). **Add to it only when a
+second app needs the same thing.** Don't build a login fixture, an API client
+or a data layer until an app needs one, and prefer Playwright's built-in way
+when there is one.
 
 ## Fixtures
 
-- `framework/fixtures/base.ts` extends `@playwright/test` and exports `test`
-  and `expect`. Each `apps/<app>/fixtures.ts` extends it with the app's page
-  objects, API clients and data, and supplies `login` using its own login page.
-- Fixtures are lazy: one runs only if a test asks for it. Expensive things are
-  worker-scoped, built on first use.
+- `core/fixtures.ts` extends `@playwright/test` and exports `test` and
+  `expect`:
+  - `app: AppConfig`: worker option, set per project by `appProject(app)`;
+  - `envGuard`: auto fixture, skips with `<baseUrlVar> not set` when the app
+    has no base URL.
+- Each `apps/<app>/fixtures.ts` extends it with the app's page objects
+  (`practicePage`, `inventoryPage`). Specs get pages from fixtures, never
+  `new XPage(page)`.
+- Fixtures are lazy: one runs only if a test asks for it.
 - Whatever a fixture creates in the app, its teardown removes.
 
-### Base fixtures
+## Login (only for an app that has one)
 
-| Fixture | Scope | What it does |
-|---------|-------|--------------|
-| `app: AppConfig` | worker option | set per project by `appProject(app)` |
-| `user: string \| undefined` | worker option | `undefined` = the app's default user; switch with `test.use({ user: 'admin' })` |
-| `login: (page, credentials) => Promise<void>` | worker option | supplied by the app |
-| `auth` | worker | on first use: resolve the user; if credentials are complete, log in once in a new context with the project's `baseURL`, save storage state to `playwright/.auth/<app>-<user>-<workerIndex>.json` (one file per worker, no write race), return `{ file }`; else `{ missing: [...] }` |
-| `loggedIn: boolean` | test option, default `true` | login-page tests set `false` |
-| `storageState` | test (override) | **depends on `envGuard`** (so a missing URL skips before any login runs); `loggedIn: false` → none and `auth` is never touched; missing credentials → `testInfo.skip(true, '<VAR> not set')`; else the auth file |
-| `credentials` | test | for tests that type credentials; skips the same way |
-| `envGuard` | test, `auto: true` | skips with `<baseUrlVar> not set` when there's no base URL |
+Use Playwright's standard **setup project**, not a custom fixture. The first
+app with a login adds this to `core/` (an app-agnostic change, the one
+allowed exception to "a new app never edits `core/`"):
 
-An API-only test that never asks for `page` never triggers a login.
+1. **Config:** `AppConfig` gets `login?: { requiredVars: string[] }` (the
+   credential env var names). `appProject()` becomes `appProjects()` and
+   returns `Project[]`; `playwright.config.ts` uses `...apps.flatMap(appProjects)`.
+   For an app with `login` it returns two projects:
+   - `<app>-setup`: `testDir: apps/<app>/tests`, `testMatch: /auth\.setup\.ts/`,
+     and **the same `use`** as the app project (`baseURL`, `app`,
+     `testIdAttribute`, device). Without them the setup finds no file, or
+     its relative `goto` and `envGuard` break.
+   - `<app>`: `dependencies: ['<app>-setup']`,
+     `use.storageState: 'playwright/.auth/<app>.json'`.
+2. **Setup test:** `apps/<app>/tests/auth.setup.ts` imports `test` from the
+   app's fixtures, logs in through the login page object once and saves the
+   state with `page.context().storageState({ path })`.
+3. **Missing credentials must skip the dependent tests too.** A skipped setup
+   counts as passed in Playwright, so the app's tests would still run with a
+   missing or stale state file. So `envGuard` also skips with `<VAR> not set`
+   when any of `login.requiredVars` is unset; it's an auto fixture, so it runs
+   before the context is created. Keep the same skip in the setup test.
+4. Login-page tests opt out with `test.use({ storageState: { cookies: [], origins: [] } })`.
 
-## API layer
+Several roles: one setup test and one state file per role
+(`playwright/.auth/<app>-admin.json`), chosen per file with `test.use`.
 
-- `BaseApiClient(request: APIRequestContext, headers = {})` with protected
-  `getJson<T>(url)` and `postJson<T>(url, data)`; a non-2xx response throws
-  with method, URL, status and the start of the body.
-- One client per app resource or service in `apps/<app>/api/`, methods named
-  for what they do (`getUser(id)`, `createOrder(data)`).
-- Clients are fixtures. UI tests may use them for setup and cleanup.
+## API tests (only when the first one is needed)
+
+Put the client in `apps/<app>/api/`, one class per resource, using
+Playwright's `request` fixture; specs in `apps/<app>/tests/api/`. Move a
+shared base client to `core/` only when a second app needs it.
 
 ## Config
 
 - `apps/index.ts` lists every app. `playwright.config.ts` calls
-  `loadDotEnv()` first, keeps the existing projects for tests not yet moved,
-  and adds `...apps.map(appProject)`.
-- `appProject(app)` → `{ name: app.name, testDir: 'tests/' + app.name, use: {
-  baseURL: resolveBaseUrl(app), app } }` plus the shared browser settings.
-- `tsconfig.json` paths: `"@framework/*": ["./framework/*"]`,
-  `"@apps/*": ["./apps/*"]` (`./`-prefixed, no `baseUrl`; current TypeScript
-  rejects `baseUrl` and `moduleResolution: node`).
-- A context you create yourself (the worker login) does **not** inherit the
-  project's `use` settings. Pass `baseURL` explicitly, and if the app uses a
-  custom `testIdAttribute`, set it with `selectors.setTestIdAttribute()`
-  before logging in.
+  `loadDotEnv()` first, keeps a `chromium` project for tests not moved yet
+  (`testDir: './tests'`), and adds `...apps.map(appProject)`.
+- `appProject(app)` → `{ name: app.name, testDir: 'apps/' + app.name + '/tests',
+  use: { baseURL: resolveBaseUrl(app), app, ... } }` plus the shared browser
+  settings.
+- `tsconfig.json` paths: `"@core/*": ["./core/*"]`, `"@apps/*": ["./apps/*"]`
+  (`./`-prefixed, no `baseUrl`; current TypeScript rejects `baseUrl` and
+  `moduleResolution: node`).
 
 ## Secrets
 
 - URLs and credentials come from env vars, loaded from `.env` with `dotenv`.
   `.env` and `playwright/.auth/` (saved login sessions hold live cookies) go
-  in `.gitignore`; add a `.env.example` with the variable names
-  and no values. A missing `.env` must not break the run (CI has none).
+  in `.gitignore`; add a `.env.example` with the variable names and no values
+  once an app has any. A missing `.env` must not break the run (CI has none).
 - **A URL is not a secret.** Give `defaultBaseUrl` the app's known URL in
   `app.config.ts` (no approval needed), so a fresh checkout and CI run the
   tests; the env var only overrides it.
 - **Missing vars: skip, loudly.** The app's tests show as skipped with the
   variable named (`ABACUS_PASSWORD not set`). Never fail the run for it; never
   drop the project silently.
-- **Defaults in `app.config.ts` only when the user approved it for that app.**
+- **Credential defaults in code only when the user approved it for that app.**
   Never on your own judgement, even for "public" demo credentials. Approvals
-  are per repo and live in the agent's memory (`decisions.md`), not here.
+  are per app and live in the app's memory (`apps/<app>/memory.md` in the
+  agent's memory folder), not here.
 - Never write a secret into docs, plans, maps, reports or memory. Name the
   variable instead.

@@ -20,6 +20,23 @@ Open this first when we start working again.
 4. [ ] **Confirm contract testing.** Check whether the framework covers
    contract tests, and how.
 5. [ ] **Set up a site skill for exploratory testing.**
+6. [x] **Split the agent's memory into folders.** *(Done 2026-11-13.)*
+   General notes stay at the top of `.claude/agent-memory/qa-tester/`; each
+   app has `apps/<app>/memory.md` there, listed under "Apps" in `MEMORY.md`.
+   Still open: memory shared across repos (`user` scope), which goes with
+   "one repo per app" in item 7.
+7. [x] **Understand the `apps/` vs `framework/` split.** *(Done 2026-11-13.)*
+   - **Decided:** each app folder holds everything about that app:
+     `apps/<app>/` has its pages, components, fixtures, `tests/`, `specs/`
+     and `docs/`.
+   - **`framework/` became a small `core/`** (79 lines): `app.ts`,
+     `fixtures.ts`, `pages/base-page.ts`. The custom login fixture and the API
+     client were removed. Logins will use Playwright's setup project when the
+     first app needs one.
+   - Still open: one repo per app, which goes with item 6.
+8. [ ] **Move Swag Labs into `apps/swag-labs/`.** Use the same scenarios and
+   a login setup project. Remove the old files only with approval. Then do
+   Abacus as its own step.
 
 ## Notes to myself
 
