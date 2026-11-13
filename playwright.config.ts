@@ -1,13 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
+import { loadDotEnv } from './framework/helpers/env';
+import { appProject } from './framework/config/app-project';
+import { apps } from './apps';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+/* Load .env if present (a missing file is fine: CI has none). */
+loadDotEnv();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -24,50 +22,23 @@ export default defineConfig({
   workers: process.env.CI ? Math.max(1, Math.floor(os.cpus().length / 2)) : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html'], ['json', { outputFile: 'test-results/results.json' }]],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  /* Shared settings for all the projects below. */
   use: {
     /* Headed locally, headless on CI (CI runners have no display). */
     headless: !!process.env.CI,
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
     /* Keep a trace and a screenshot for every failed attempt, so CI failures can be investigated. */
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
   projects: [
+    /* Legacy tests (not moved to the framework yet): everything under tests/ except the app folders. */
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: apps.map((app) => `**/${app.name}/**`),
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    /* One project per app in apps/index.ts (testDir tests/<app>, its own baseURL). */
+    ...apps.map(appProject),
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
