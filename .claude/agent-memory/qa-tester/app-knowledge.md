@@ -15,3 +15,4 @@
   `/inventory-item.html?id=4` (Sauce Labs Backpack).
 - **Seed:** `tests/swag Lab tests/seed.spec.ts` only does `page.goto`. It has
   no login, so each test logs in itself.
+- **qa-practice** (https://qaengineerwaqas.com/qa-practice): site mapped 2026-11-13, see `docs/apps/qa-practice/journey-map.md` and `observations.md`.

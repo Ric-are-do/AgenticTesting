@@ -14,3 +14,6 @@ node_modules/
 # Playwright CLI / MCP session logs and snapshots
 /.playwright-cli/
 /.playwright-mcp/
+
+# Environment secrets
+.env
