@@ -1,0 +1,40 @@
+- region "How Thatha Zonke works for customers":
+  - text: The Customer Journey
+  - heading "From Craving to Doorstep" [level=2]
+  - paragraph:
+    - text: Tap any step to see how it works — or
+    - button /take the \d+-second guided tour/
+    - text: .
+  - 'button "Step 1: Set your area. Tap to learn more."':
+    - text: /\d+/
+    - heading "Set your area" [level=3]
+    - paragraph: Use GPS or pick your neighbourhood to see nearby spots.
+    - text: Instant
+  - 'button "Step 2: Browse and build. Tap to learn more."':
+    - text: /\d+/
+    - heading "Browse & build" [level=3]
+    - paragraph: Explore local restaurants and add your favourites to the cart.
+    - text: Discover
+  - 'button "Step 3: Pay securely. Tap to learn more."':
+    - text: /\d+/
+    - heading "Pay securely" [level=3]
+    - paragraph: Checkout with card, EFT, or cash — your choice, your way.
+    - text: Secure
+  - 'button "Step 4: Track live. Tap to learn more."':
+    - text: /\d+/
+    - heading "Track live" [level=3]
+    - paragraph: Watch your driver on the map from pickup to your door.
+    - text: Live GPS
+  - 'button "Step 5: Enjoy your meal. Tap to learn more."':
+    - text: /\d+/
+    - heading "Enjoy your meal" [level=3]
+    - paragraph: Delivered hot or ready for collection — always fresh.
+    - text: Done
+  - paragraph: Fast delivery
+  - paragraph: /\d+ min average/
+  - paragraph: Secure payments
+  - paragraph: Encrypted checkout
+  - paragraph: Live tracking
+  - paragraph: Real-time GPS
+  - paragraph: Direct chat
+  - paragraph: Restaurant & driver

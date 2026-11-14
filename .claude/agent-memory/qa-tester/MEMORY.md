@@ -9,6 +9,7 @@ subfolder under `apps/`.
 - swag-labs → apps/swag-labs/memory.md: credential defaults approved; login button, empty-cart checkout bug, cart redirect
 - qa-practice → apps/qa-practice/memory.md: never submit the home page contact form (real form service)
 - qapractice-com → apps/qapractice-com/memory.md: www.qapractice.com (not qa-practice); demo-credential defaults approved; API read-only; never press "Open email draft"
+- thatha-zonke → apps/thatha-zonke/memory.md: Django food-ordering demo on Render; no account yet (ordering login-gated); no data-testid; 9+ known bugs (category tiles/filter, specials "Save R", add-to-cart dead click); don't security-probe
 
 ## Environment
 - Don't run several `npx playwright test` at once in one folder: they share test-results/ and fail with ENOENT trace errors → environment.md

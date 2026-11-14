@@ -8,7 +8,7 @@ metadata:
 Decision: standard (2026-11-13, built by building-playwright-framework after the user chose a new framework; restructured the same day to "one folder per app + small core/" at the user's request; the previous map was confirmed by the user and is kept below as "Legacy tests")
 
 ## Test folders
-- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). Apps: `qapractice-com` (www.qapractice.com, 78 scenarios + seed, 2026-11-13).
+- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). Apps: `qapractice-com` (www.qapractice.com, 78 scenarios + seed, 2026-11-13); `thatha-zonke` (Render food-ordering demo, 12 public-surface specs + seed, 2026-11-14).
 - Tests not moved yet stay in `tests/` (see "Legacy tests").
 
 ## Page objects and components

@@ -1,0 +1,4 @@
+- text: Email address ✉️
+- textbox "Email address":
+  - /placeholder: Enter your registered email
+- button "Send Reset Link →"

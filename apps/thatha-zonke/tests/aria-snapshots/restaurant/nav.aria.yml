@@ -1,0 +1,7 @@
+- navigation:
+  - link "Thatha Zonke Thatha Zonke":
+    - /url: /
+    - img "Thatha Zonke"
+    - text: ""
+  - link "🛒 Cart 0":
+    - /url: /cart/

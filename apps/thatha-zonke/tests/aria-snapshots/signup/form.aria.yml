@@ -1,0 +1,15 @@
+- text: Full Name
+- textbox "Full Name"
+- text: Phone Number
+- textbox "Phone Number"
+- text: Email
+- textbox "Email"
+- text: Delivery Address
+- textbox "Delivery Address"
+- text: Password
+- textbox "Password"
+- paragraph: Enter a password
+- text: Confirm Password
+- textbox "Confirm Password"
+- paragraph
+- button "Create Account"

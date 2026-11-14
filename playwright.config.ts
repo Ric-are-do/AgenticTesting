@@ -20,6 +20,15 @@ export default defineConfig({
   workers: process.env.CI ? Math.max(1, Math.floor(os.cpus().length / 2)) : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html'], ['json', { outputFile: 'test-results/results.json' }]],
+  /* Store aria snapshots grouped per page:
+       apps/<app>/tests/aria-snapshots/<page>/<element>.aria.yml
+     The <page> folder comes from {testFileDir}: each page's aria spec lives in
+     its own folder (apps/thatha-zonke/tests/<page>/aria.spec.ts). */
+  expect: {
+    toMatchAriaSnapshot: {
+      pathTemplate: '{testDir}/aria-snapshots/{testFileDir}/{arg}{ext}',
+    },
+  },
   /* Shared settings for all the projects below. */
   use: {
     /* Headed locally, headless on CI (CI runners have no display). */

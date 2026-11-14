@@ -1,0 +1,10 @@
+- textbox "🔍 Search restaurants or food"
+- combobox:
+  - option "📍 Any area" [selected]
+  - option "Pretoria West"
+  - option "Mamelodi"
+  - option "Centurion"
+  - option "Soshanguve"
+  - option "Soweto"
+- button "📍 GPS"
+- button "Find Food"

@@ -1,0 +1,11 @@
+- contentinfo:
+  - paragraph: Thatha Zonke
+  - paragraph: Local meals. One place.
+  - link "Thatha Zonke on Facebook":
+    - /url: https://www.facebook.com/profile.php?id=61579946501243
+  - link "Thatha Zonke on TikTok":
+    - /url: https://www.tiktok.com/@thatazonke
+  - button "Register as Food Seller"
+  - text: "|"
+  - button "Register as Delivery Driver"
+  - paragraph: /© \d+ Thatha Zonke\. All rights reserved\./

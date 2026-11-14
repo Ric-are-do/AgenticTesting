@@ -1,0 +1,13 @@
+- text: Username or Email 👤
+- textbox "Username or Email":
+  - /placeholder: Enter your username
+- text: Password
+- link "Forgot password?":
+  - /url: /password-reset/
+- text: 🔒
+- textbox "Password":
+  - /placeholder: Enter your password
+- button "Show password": 👁
+- checkbox "Keep me signed in"
+- text: Keep me signed in
+- button "Sign In →"

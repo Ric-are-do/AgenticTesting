@@ -1,0 +1,19 @@
+- banner:
+  - link "Thatha Zonke Logo Thatha Zonke LOCAL MEALS. ONE PLACE.":
+    - /url: /
+    - img "Thatha Zonke Logo"
+    - heading "Thatha Zonke" [level=1]
+    - paragraph: LOCAL MEALS. ONE PLACE.
+  - navigation:
+    - link "Restaurants":
+      - /url: "#restaurants"
+    - button "Change theme colours":
+      - img
+    - link "How it Works":
+      - /url: "#customer-flow"
+    - link "🛒 Cart":
+      - /url: /cart/
+    - link "🔑 Login":
+      - /url: /customer_login/
+    - link "Sign Up":
+      - /url: /signup/
