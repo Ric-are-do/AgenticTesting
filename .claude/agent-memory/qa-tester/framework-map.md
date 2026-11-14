@@ -8,7 +8,7 @@ metadata:
 Decision: standard (2026-11-13, built by building-playwright-framework after the user chose a new framework; restructured the same day to "one folder per app + small core/" at the user's request; the previous map was confirmed by the user and is kept below as "Legacy tests")
 
 ## Test folders
-- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). No apps yet (qa-practice removed 2026-11-13 so the skills can be re-run from scratch).
+- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). Apps: `qapractice-com` (www.qapractice.com, 78 scenarios + seed, 2026-11-13).
 - Tests not moved yet stay in `tests/` (see "Legacy tests").
 
 ## Page objects and components
@@ -19,7 +19,7 @@ Decision: standard (2026-11-13, built by building-playwright-framework after the
 ## Fixtures and helpers
 - `core/fixtures.ts`: base `test` with the `app` worker option and an auto `envGuard` that skips with `<VAR> not set` when there is no base URL.
 - `core/app.ts`: `AppConfig`, `loadDotEnv()`, `resolveBaseUrl()`, `appProject()`.
-- `apps/<app>/fixtures.ts` extends the core `test` with the app's page objects (e.g. `inventoryPage`).
+- `apps/<app>/fixtures.ts` extends the core `test` with the app's page objects (e.g. `loginPage`, `shopPage`).
 - No login fixture and no API client yet: an app with a login gets a Playwright setup project (`apps/<app>/tests/auth.setup.ts`), API tests get `apps/<app>/api/` when the first one is needed.
 
 ## Test data

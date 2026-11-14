@@ -8,6 +8,7 @@ subfolder under `apps/`.
 - Before working on an app, read its memory: `apps/<app>/memory.md` in THIS folder (not the repo's `apps/<app>/` code folder). App-specific notes go there, never in the general files. A new app gets its file and a line here. Delete an app's memory only when the user asks; removing its code keeps it.
 - swag-labs → apps/swag-labs/memory.md: credential defaults approved; login button, empty-cart checkout bug, cart redirect
 - qa-practice → apps/qa-practice/memory.md: never submit the home page contact form (real form service)
+- qapractice-com → apps/qapractice-com/memory.md: www.qapractice.com (not qa-practice); demo-credential defaults approved; API read-only; never press "Open email draft"
 
 ## Environment
 - Don't run several `npx playwright test` at once in one folder: they share test-results/ and fail with ENOENT trace errors → environment.md
