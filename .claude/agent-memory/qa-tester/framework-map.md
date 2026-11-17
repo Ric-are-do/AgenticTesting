@@ -8,7 +8,7 @@ metadata:
 Decision: standard (2026-11-13, built by building-playwright-framework after the user chose a new framework; restructured the same day to "one folder per app + small core/" at the user's request; the previous map was confirmed by the user and is kept below as "Legacy tests")
 
 ## Test folders
-- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). Apps: `qapractice-com` (www.qapractice.com, 78 scenarios + seed, 2026-11-13); `thatha-zonke` (Render food-ordering demo, 12 public-surface specs + seed, 2026-11-14).
+- Each app holds everything in `apps/<app>/`: `tests/seed.spec.ts`, `tests/ui/` (one scenario per file), `specs/` (plans), `docs/` (knowledge base). Apps: `qapractice-com` (www.qapractice.com, 78 scenarios + seed, 2026-11-13); `thatha-zonke` (Render food-ordering demo, 12 public-surface specs + seed, 2026-11-14); `automation-exercise` (www.automationexercise.com, 34 scenarios + seed, 2026-11-17; also `api/` for account setup and `data/`).
 - Tests not moved yet stay in `tests/` (see "Legacy tests").
 
 ## Page objects and components
@@ -18,7 +18,7 @@ Decision: standard (2026-11-13, built by building-playwright-framework after the
 
 ## Fixtures and helpers
 - `core/fixtures.ts`: base `test` with the `app` worker option and an auto `envGuard` that skips with `<VAR> not set` when there is no base URL.
-- `core/app.ts`: `AppConfig`, `loadDotEnv()`, `resolveBaseUrl()`, `appProject()`.
+- `core/app.ts`: `AppConfig` (name, base URL var and default, optional `testIdAttribute`, optional `workers` cap per app), `loadDotEnv()`, `resolveBaseUrl()`, `appProject()`.
 - `apps/<app>/fixtures.ts` extends the core `test` with the app's page objects (e.g. `loginPage`, `shopPage`).
 - No login fixture and no API client yet: an app with a login gets a Playwright setup project (`apps/<app>/tests/auth.setup.ts`), API tests get `apps/<app>/api/` when the first one is needed.
 
@@ -29,7 +29,7 @@ Inline per scenario (values from the plan). `apps/<app>/data/` is added when an 
 `playwright.config.ts` loads `.env` (optional), keeps the original settings (fullyParallel, retries 1 on CI, html + json reporters, headed locally / headless on CI, trace and screenshot on failure) and has projects: `chromium` (legacy, `testDir: ./tests`) plus one project per app from `apps/index.ts` (`testDir: apps/<app>/tests`, `baseURL` from the app config). `tsconfig.json` aliases `@core/*`, `@apps/*`.
 
 ## Locators
-Test id first (`getByTestId`, default `data-testid`), then role with name, then text; `#id` CSS only where an element has no test id, with a comment in the component saying so.
+Test id first (`getByTestId`, default `data-testid`; an app may set another attribute, e.g. `data-qa` for automation-exercise), then role with name, then text; CSS (`#id`, class) only where an element has none of these, with a comment in the page object or component saying so.
 
 ## Credentials and environments
 Env vars per app in `app.config.ts`, loaded from `.env` (gitignored, with `playwright/.auth/`). Code defaults for credentials only when approved in the app's memory (`apps/<app>/memory.md`).

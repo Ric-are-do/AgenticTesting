@@ -12,6 +12,10 @@ export interface AppConfig {
   defaultBaseUrl?: string;
   /** Only if the app uses something other than data-testid. */
   testIdAttribute?: string;
+  /** Cap on parallel workers for this app, e.g. a shared demo site that throttles. */
+  workers?: number;
+  /** expect() timeout in ms for this app, when its pages are slow (default 5000). */
+  expectTimeout?: number;
 }
 
 /** Loads .env if present; a missing file is fine (CI has none). */
@@ -28,6 +32,8 @@ export function appProject(app: AppConfig): Project {
   return {
     name: app.name,
     testDir: `apps/${app.name}/tests`,
+    ...(app.workers ? { workers: app.workers } : {}),
+    ...(app.expectTimeout ? { expect: { timeout: app.expectTimeout } } : {}),
     use: {
       ...devices['Desktop Chrome'],
       baseURL: resolveBaseUrl(app),
