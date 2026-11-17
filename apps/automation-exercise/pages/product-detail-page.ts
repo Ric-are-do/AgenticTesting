@@ -41,9 +41,12 @@ export class ProductDetailPage extends SitePage {
 
   async addToCart(quantity?: number): Promise<CartModal> {
     if (quantity !== undefined) await this.quantityInput.fill(String(quantity));
-    await this.addToCartButton.click();
     const modal = new CartModal(this.page);
-    await modal.waitUntilOpen();
+    // The click is sometimes swallowed (jQuery handler not bound yet on the slow demo site): retry it.
+    await expect(async () => {
+      await this.addToCartButton.click();
+      await modal.message.waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
     return modal;
   }
 

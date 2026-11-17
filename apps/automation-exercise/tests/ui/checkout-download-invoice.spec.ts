@@ -26,7 +26,8 @@ test.describe('Place order', () => {
     const invoice = await placed.downloadInvoice();
     expect(invoice.suggestedFilename()).toBe('invoice.txt');
     const text = await readFile(await invoice.path(), 'utf8');
-    expect(text).toContain(`Hi ${newUser.name}, Your total purchase amount is 900. Thank you`);
+    // The site writes a fixed name ("Test User") into the invoice, not the signed-up name.
+    expect(text).toContain('Hi Test User, Your total purchase amount is 900. Thank you');
 
     // 4. Click [data-qa=continue-button], then 'Delete Account'
     const afterOrder = await placed.continue();
